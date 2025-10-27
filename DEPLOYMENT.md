@@ -10,17 +10,17 @@ The web client can connect to your Java backend in two ways:
 
 ## Local Development Setup
 
-1. **Start your Tomcat/Java backend** on port 8080:
-   ```bash
-   # Make sure your S-emulator is running on localhost:8080/S-emulator
-   # Example: Start Tomcat with deployed S-emulator.war
-   ```
+**Important:** Both Vite and Tomcat want port 8080. You must run Tomcat on port 8081 for local development.
 
-2. **Configure the web client**:
+1. **Configure Tomcat to run on port 8081**:
+   - Edit your Tomcat's `server.xml`
+   - Change the Connector port from 8080 to 8081
+   - Restart Tomcat
+
+2. **Start your Tomcat/Java backend** on port 8081:
    ```bash
-   # Create a .env file in the project root
-   # Add this line:
-   VITE_API_URL=http://localhost:8080/S-emulator/api
+   # Make sure your S-emulator is running on localhost:8081/S-emulator
+   # Example: Start Tomcat with deployed S-emulator.war
    ```
 
 3. **Install dependencies and start the web client**:
@@ -29,7 +29,9 @@ The web client can connect to your Java backend in two ways:
    npm run dev
    ```
 
-4. The web client will run on `http://localhost:5173` and connect to your Java backend on port 8080.
+4. The web client will run on `http://localhost:8080` with Vite's proxy automatically forwarding API requests to Tomcat on port 8081.
+   - No CORS issues!
+   - Browser sees everything from localhost:8080
 
 ## Production Deployment
 
