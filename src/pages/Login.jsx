@@ -73,7 +73,7 @@ export default function Login() {
       <div className="fixed top-4 right-4 z-50 flex items-center justify-center">
         <ThemeToggle />
       </div>
-      <Card className="w-[400px]">
+      <Card className="w-[500px]">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">S-Emulator</CardTitle>
           <CardDescription>Enter your username to login</CardDescription>
