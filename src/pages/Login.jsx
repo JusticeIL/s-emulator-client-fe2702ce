@@ -74,7 +74,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       {/* Theme Toggle - Fixed in top right */}
-      <div className="fixed top-4 right-4 z-50 bg-card/90 backdrop-blur-sm rounded-lg shadow-lg p-2">
+      <div className="fixed top-4 right-4 z-50 bg-card/90 backdrop-blur-sm rounded-lg p-2">
         <ThemeToggle />
       </div>
 
