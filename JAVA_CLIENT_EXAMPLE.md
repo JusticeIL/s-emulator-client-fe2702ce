@@ -2,6 +2,36 @@
 
 This document provides a complete JavaFX client example showing how to interact with the S-Emulator REST API.
 
+## Download Working Client
+
+📦 **[Download Client.jar](./public/examples/Client.jar)** - A fully functional JavaFX client that demonstrates all API interactions.
+
+### Running the Client
+
+```bash
+# Run the client (requires Java 8 or higher)
+java -jar Client.jar
+
+# Or with JavaFX modules (Java 11+)
+java --module-path /path/to/javafx-sdk/lib --add-modules javafx.controls,javafx.fxml -jar Client.jar
+```
+
+**Requirements:**
+- Java Runtime Environment (JRE) 8 or higher
+- S-Emulator server running at `http://localhost:8080/S-emulator`
+- JavaFX libraries (included in Java 8, separate download for Java 11+)
+
+### What the Client Demonstrates
+
+The Client.jar showcases:
+- ✅ User registration and authentication with cookie management
+- ✅ Fetching and displaying available programs
+- ✅ Setting active program and viewing program details
+- ✅ Executing programs with architecture selection
+- ✅ Debug mode with breakpoints and step-through execution
+- ✅ Variable monitoring and cycle counting
+- ✅ Proper error handling and user feedback
+
 ## Maven Dependencies
 
 ```xml
