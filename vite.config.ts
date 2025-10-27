@@ -7,8 +7,8 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 5173,
-    proxy: {
+    port: mode === 'production' ? 8080 : 5173,
+    proxy: mode === 'production' ? undefined : {
       '/S-emulator/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
