@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { fetchSharedPrograms, getUsernameCookie, deleteUsernameCookie } from "@/lib/api";
+import { fetchSharedPrograms, setActiveProgram, getUsernameCookie, deleteUsernameCookie } from "@/lib/api";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Loader2, LogOut } from "lucide-react";
 
@@ -52,13 +52,7 @@ export default function Dashboard() {
 
   const handleRunProgram = async (programName) => {
     try {
-      // Set the program as active before navigating
-      const response = await fetch(`http://localhost:8080/S-emulator/api/program/active`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ programName }),
-      });
+      const response = await setActiveProgram(programName);
       
       if (response.ok) {
         navigate('/execution');

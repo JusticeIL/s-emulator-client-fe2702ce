@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { fetchActiveProgram, executeProgram, getUsernameCookie } from "@/lib/api";
+import { fetchActiveProgram, executeProgram, getUsernameCookie, ARCHITECTURE_GENERATIONS, compareArchitectures } from "@/lib/api";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Loader2, ArrowLeft, Play } from "lucide-react";
 
@@ -13,6 +16,8 @@ export default function Execution() {
   const [program, setProgram] = useState(null);
   const [loading, setLoading] = useState(true);
   const [executing, setExecuting] = useState(false);
+  const [selectedArchitecture, setSelectedArchitecture] = useState('IV');
+  const [programArgs, setProgramArgs] = useState({});
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -36,6 +41,20 @@ export default function Execution() {
           return;
         }
         setProgram(data);
+        
+        // Set default architecture to program's required arch or highest available
+        if (data.minimalArchitectureNeededForRun) {
+          setSelectedArchitecture(data.minimalArchitectureNeededForRun);
+        }
+        
+        // Initialize program arguments with empty values
+        if (data.arguments) {
+          const initialArgs = {};
+          Object.keys(data.arguments).forEach(argName => {
+            initialArgs[argName] = '';
+          });
+          setProgramArgs(initialArgs);
+        }
       } catch (error) {
         toast({
           title: "Error",
@@ -52,9 +71,25 @@ export default function Execution() {
   }, [navigate, toast]);
 
   const handleStartExecution = async () => {
+    // Validate required arguments
+    if (program?.arguments) {
+      const missingArgs = Object.keys(program.arguments).filter(
+        argName => !programArgs[argName] || programArgs[argName].trim() === ''
+      );
+      
+      if (missingArgs.length > 0) {
+        toast({
+          title: "Missing Arguments",
+          description: `Please provide values for: ${missingArgs.join(', ')}`,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     try {
       setExecuting(true);
-      const result = await executeProgram({}, program.minimalArchitectureNeededForRun || 'GEN_A');
+      const result = await executeProgram(programArgs, selectedArchitecture);
       setProgram(result);
       toast({
         title: "Execution Complete",
@@ -65,15 +100,23 @@ export default function Execution() {
       setExecuting(false);
       toast({
         title: "Error",
-        description: "Failed to execute program",
+        description: error.message || "Failed to execute program",
         variant: "destructive",
       });
     }
   };
 
   const isInstructionCompatible = (instruction) => {
-    const compatible = program?.minimalArchitectureNeededForRun || [];
-    return compatible.includes(instruction.opcode);
+    if (!instruction.architecture || !selectedArchitecture) return true;
+    // Instruction is compatible if its required architecture <= selected architecture
+    return compareArchitectures(instruction.architecture, selectedArchitecture) <= 0;
+  };
+
+  const handleArgChange = (argName, value) => {
+    setProgramArgs(prev => ({
+      ...prev,
+      [argName]: value
+    }));
   };
 
   if (loading) {
@@ -97,7 +140,7 @@ export default function Execution() {
               <h1 className="text-3xl font-bold">{program?.programName}</h1>
               {program?.minimalArchitectureNeededForRun && (
                 <p className="text-muted-foreground mt-1">
-                  Architecture: {program.minimalArchitectureNeededForRun}
+                  Required Architecture: {program.minimalArchitectureNeededForRun}
                 </p>
               )}
             </div>
@@ -136,6 +179,62 @@ export default function Execution() {
             </CardContent>
           </Card>
         )}
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Execution Configuration</CardTitle>
+            <CardDescription>Configure architecture and program arguments</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="architecture">Architecture Generation</Label>
+              <Select value={selectedArchitecture} onValueChange={setSelectedArchitecture}>
+                <SelectTrigger id="architecture" className="w-full sm:w-[200px]">
+                  <SelectValue placeholder="Select architecture" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ARCHITECTURE_GENERATIONS.map(arch => (
+                    <SelectItem key={arch} value={arch}>
+                      Generation {arch}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Select the architecture generation for execution (I &lt; II &lt; III &lt; IV)
+              </p>
+            </div>
+
+            {program?.arguments && Object.keys(program.arguments).length > 0 && (
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-medium mb-2">Program Arguments</h4>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Provide values for the required program arguments
+                  </p>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {Object.entries(program.arguments).map(([argName, argType]) => (
+                    <div key={argName} className="space-y-2">
+                      <Label htmlFor={argName}>
+                        {argName}
+                        <span className="text-xs text-muted-foreground ml-2">({argType})</span>
+                      </Label>
+                      <Input
+                        id={argName}
+                        type="text"
+                        value={programArgs[argName] || ''}
+                        onChange={(e) => handleArgChange(argName, e.target.value)}
+                        placeholder={`Enter ${argName}`}
+                        required
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {program?.variables && Object.keys(program.variables).length > 0 && (
           <Card>

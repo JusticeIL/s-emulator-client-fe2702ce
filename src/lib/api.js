@@ -1,8 +1,18 @@
-// S-Emulator API Client v1.0.1
+// S-Emulator API Client v1.0.2
 // Base API URL - Update this to match your S-Emulator server
 // For local testing, use: 'http://localhost:8080/S-emulator/api'
 // For production, set VITE_API_URL environment variable
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/S-emulator/api';
+
+// Architecture Generation constants (server-side values)
+export const ARCHITECTURE_GENERATIONS = ['I', 'II', 'III', 'IV'];
+
+// Helper to compare architecture levels (I < II < III < IV)
+export function compareArchitectures(arch1, arch2) {
+  const index1 = ARCHITECTURE_GENERATIONS.indexOf(arch1);
+  const index2 = ARCHITECTURE_GENERATIONS.indexOf(arch2);
+  return index1 - index2; // negative if arch1 < arch2, 0 if equal, positive if arch1 > arch2
+}
 
 // Helper function to make API requests
 export async function fetchAPI(endpoint, options = {}) {
@@ -126,7 +136,7 @@ export async function checkExecution(username) {
 }
 
 // Execution
-export async function executeProgram(args = {}, architectureGeneration = 'GEN_A') {
+export async function executeProgram(args = {}, architectureGeneration = 'IV') {
   const response = await fetchAPI('/program/execute', {
     method: 'POST',
     body: JSON.stringify({
@@ -141,7 +151,7 @@ export async function executeProgram(args = {}, architectureGeneration = 'GEN_A'
 }
 
 // Debug
-export async function startDebug(args = {}, breakpoints = [], architectureGeneration = 'GEN_A') {
+export async function startDebug(args = {}, breakpoints = [], architectureGeneration = 'IV') {
   const response = await fetchAPI('/program/debug', {
     method: 'POST',
     body: JSON.stringify({
