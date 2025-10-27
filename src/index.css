@@ -121,239 +121,72 @@ All colors MUST be HSL.
     }
   }
 
-  /* Sky-themed toggle matching reference design */
-  .theme-switch {
+  /* iOS-style Toggle */
+  :root {
+    --toggle-width: 56px;
+    --toggle-height: 32px;
+    --toggle-knob: 26px;
+    --toggle-bg-off: #e6e6e6;
+    --toggle-bg-on: #1e88e5;
+    --toggle-knob-color: #fff;
+    --toggle-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+
+  .ios-toggle {
+    width: var(--toggle-width);
+    height: var(--toggle-height);
+    border-radius: calc(var(--toggle-height) / 2);
+    background: var(--toggle-bg-off);
+    border: none;
+    padding: 3px;
     position: relative;
-    display: inline-block;
-    width: 90px;
-    height: 42px;
     cursor: pointer;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.04);
+    transition: background .22s ease;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
   }
 
-  .theme-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-
-  .theme-switch .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, #5EA3D0 0%, #8BC6EC 50%, #B8DFF0 100%);
-    border-radius: 42px;
-    transition: all 0.5s ease;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  /* Sun/Moon circle */
-  .theme-switch .celestial {
-    position: absolute;
-    height: 34px;
-    width: 34px;
-    left: 4px;
-    bottom: 4px;
-    background: #FFD93D;
+  /* knob */
+  .ios-toggle::after {
+    content: "";
+    width: var(--toggle-knob);
+    height: var(--toggle-knob);
+    background: var(--toggle-knob-color);
     border-radius: 50%;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 
-      0 0 20px rgba(255, 217, 61, 0.6),
-      0 2px 8px rgba(0, 0, 0, 0.2);
-    z-index: 3;
-  }
-
-  /* Moon craters */
-  .theme-switch .crater {
     position: absolute;
-    background: rgba(180, 190, 200, 0.4);
-    border-radius: 50%;
-    opacity: 0;
-    transition: opacity 0.5s;
-  }
-
-  .theme-switch .crater-1 {
-    width: 9px;
-    height: 9px;
-    top: 10px;
-    right: 8px;
-  }
-
-  .theme-switch .crater-2 {
-    width: 6px;
-    height: 6px;
-    top: 20px;
-    right: 12px;
-  }
-
-  .theme-switch .crater-3 {
-    width: 7px;
-    height: 7px;
-    top: 14px;
-    right: 18px;
-  }
-
-  /* Stars */
-  .theme-switch .star {
-    position: absolute;
-    width: 3px;
-    height: 3px;
-    background: white;
-    border-radius: 50%;
-    opacity: 0;
-    transition: opacity 0.5s;
-    box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
-  }
-
-  .theme-switch .star-1 {
-    top: 10px;
-    left: 20px;
-    width: 2px;
-    height: 2px;
-  }
-
-  .theme-switch .star-2 {
-    top: 18px;
-    left: 30px;
-    width: 2px;
-    height: 2px;
-  }
-
-  .theme-switch .star-3 {
-    top: 28px;
-    left: 22px;
-    width: 3px;
-    height: 3px;
-  }
-
-  .theme-switch .star-4 {
-    top: 15px;
-    left: 40px;
-    width: 2px;
-    height: 2px;
-  }
-
-  .theme-switch .star-5 {
-    top: 32px;
-    left: 35px;
-    width: 2px;
-    height: 2px;
-  }
-
-  /* Clouds */
-  .theme-switch .cloud {
-    position: absolute;
-    background: white;
-    border-radius: 20px;
-    opacity: 1;
-    transition: opacity 0.5s, transform 0.5s;
-  }
-
-  .theme-switch .cloud-1 {
-    width: 18px;
-    height: 8px;
-    top: 14px;
-    right: 12px;
-  }
-
-  .theme-switch .cloud-1::before {
-    content: '';
-    position: absolute;
-    background: white;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    top: -4px;
     left: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform .22s cubic-bezier(.2,.9,.2,1), box-shadow .15s;
+    box-shadow: var(--toggle-shadow);
   }
 
-  .theme-switch .cloud-1::after {
-    content: '';
-    position: absolute;
-    background: white;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    top: -3px;
-    right: 3px;
+  /* ON state */
+  .ios-toggle.on {
+    background: linear-gradient(180deg, var(--toggle-bg-on), #1269c6);
+    box-shadow: 0 4px 10px rgba(30,136,229,0.18);
   }
 
-  .theme-switch .cloud-2 {
-    width: 14px;
-    height: 6px;
-    bottom: 12px;
-    right: 8px;
+  .ios-toggle.on::after {
+    transform: translateY(-50%) translateX(calc(var(--toggle-width) - var(--toggle-knob) - 6px));
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
   }
 
-  .theme-switch .cloud-2::before {
-    content: '';
-    position: absolute;
-    background: white;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    top: -3px;
-    left: 2px;
+  /* focus for keyboard users */
+  .ios-toggle:focus {
+    box-shadow: 0 0 0 4px rgba(30,136,229,0.14);
   }
 
-  .theme-switch .cloud-2::after {
-    content: '';
-    position: absolute;
-    background: white;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    top: -2px;
-    right: 2px;
-  }
-
-  /* Dark mode - checked state */
-  .theme-switch input:checked + .slider {
-    background: linear-gradient(135deg, #2C3E50 0%, #34495E 50%, #4A5F7F 100%);
-  }
-
-  .theme-switch input:checked + .slider .celestial {
-    transform: translateX(48px);
-    background: linear-gradient(135deg, #E8E8E8, #C8D0D8);
-    box-shadow: 
-      0 0 15px rgba(255, 255, 255, 0.3),
-      0 2px 8px rgba(0, 0, 0, 0.3);
-  }
-
-  /* Show moon details in dark mode */
-  .theme-switch input:checked + .slider .crater {
-    opacity: 1;
-  }
-
-  /* Show stars in dark mode */
-  .theme-switch input:checked + .slider .star {
-    opacity: 1;
-  }
-
-  /* Hide clouds in dark mode */
-  .theme-switch input:checked + .slider .cloud {
-    opacity: 0;
-  }
-
-  /* Hover effect */
-  .theme-switch:hover .slider {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
-
-  /* Active press effect */
-  .theme-switch:active .slider .celestial {
-    transform: scale(0.92);
-  }
-
-  .theme-switch input:checked:active + .slider .celestial {
-    transform: translateX(48px) scale(0.92);
+  /* reduce motion */
+  @media (prefers-reduced-motion: reduce) {
+    .ios-toggle, .ios-toggle::after { 
+      transition: none; 
+    }
   }
 
   /* Smooth theme transitions */
   body {
-    transition: background-color 0.5s ease, color 0.5s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
