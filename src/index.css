@@ -121,7 +121,7 @@ All colors MUST be HSL.
     }
   }
 
-  /* Beautiful sky-themed toggle switch */
+  /* Sky-themed toggle matching reference design */
   .theme-switch {
     position: relative;
     display: inline-block;
@@ -143,186 +143,187 @@ All colors MUST be HSL.
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to right, #87CEEB 0%, #E0F6FF 100%);
+    background: linear-gradient(135deg, #5EA3D0 0%, #8BC6EC 50%, #B8DFF0 100%);
     border-radius: 42px;
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.5s ease;
     overflow: hidden;
-    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
 
-  /* Sun/Moon celestial body */
+  /* Sun/Moon circle */
   .theme-switch .celestial {
     position: absolute;
     height: 34px;
     width: 34px;
     left: 4px;
     bottom: 4px;
-    background: linear-gradient(135deg, #FFD700, #FFA500);
+    background: #FFD93D;
     border-radius: 50%;
-    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 
-      0 4px 12px rgba(255, 193, 7, 0.4),
-      inset -2px -2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 2;
+      0 0 20px rgba(255, 217, 61, 0.6),
+      0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 3;
   }
 
-  /* Moon craters (hidden in light mode) */
+  /* Moon craters */
   .theme-switch .crater {
     position: absolute;
-    background: rgba(139, 149, 158, 0.3);
+    background: rgba(180, 190, 200, 0.4);
     border-radius: 50%;
     opacity: 0;
-    transition: opacity 0.6s;
+    transition: opacity 0.5s;
   }
 
   .theme-switch .crater-1 {
-    width: 8px;
-    height: 8px;
-    top: 8px;
-    right: 10px;
+    width: 9px;
+    height: 9px;
+    top: 10px;
+    right: 8px;
   }
 
   .theme-switch .crater-2 {
     width: 6px;
     height: 6px;
-    top: 18px;
-    right: 8px;
+    top: 20px;
+    right: 12px;
   }
 
   .theme-switch .crater-3 {
-    width: 5px;
-    height: 5px;
-    top: 12px;
+    width: 7px;
+    height: 7px;
+    top: 14px;
     right: 18px;
   }
 
-  /* Stars (hidden in light mode) */
+  /* Stars */
   .theme-switch .star {
     position: absolute;
+    width: 3px;
+    height: 3px;
     background: white;
     border-radius: 50%;
     opacity: 0;
-    transition: opacity 0.6s;
-  }
-
-  .theme-switch .star::before,
-  .theme-switch .star::after {
-    content: '';
-    position: absolute;
-    background: white;
-    border-radius: 50%;
+    transition: opacity 0.5s;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
   }
 
   .theme-switch .star-1 {
+    top: 10px;
+    left: 20px;
     width: 2px;
     height: 2px;
-    top: 8px;
-    left: 15px;
   }
 
   .theme-switch .star-2 {
+    top: 18px;
+    left: 30px;
     width: 2px;
     height: 2px;
-    top: 15px;
-    left: 25px;
   }
 
   .theme-switch .star-3 {
+    top: 28px;
+    left: 22px;
     width: 3px;
     height: 3px;
-    top: 25px;
-    left: 18px;
   }
 
   .theme-switch .star-4 {
+    top: 15px;
+    left: 40px;
     width: 2px;
     height: 2px;
-    top: 18px;
-    left: 35px;
   }
 
   .theme-switch .star-5 {
+    top: 32px;
+    left: 35px;
     width: 2px;
     height: 2px;
-    top: 30px;
-    left: 30px;
   }
 
-  /* Clouds (visible in light mode) */
+  /* Clouds */
   .theme-switch .cloud {
     position: absolute;
     background: white;
+    border-radius: 20px;
     opacity: 1;
-    transition: opacity 0.6s, transform 0.6s;
-    border-radius: 50%;
-  }
-
-  .theme-switch .cloud::before,
-  .theme-switch .cloud::after {
-    content: '';
-    position: absolute;
-    background: white;
-    border-radius: 50%;
+    transition: opacity 0.5s, transform 0.5s;
   }
 
   .theme-switch .cloud-1 {
-    width: 14px;
+    width: 18px;
     height: 8px;
-    top: 12px;
-    right: 15px;
-    border-radius: 8px;
+    top: 14px;
+    right: 12px;
   }
 
   .theme-switch .cloud-1::before {
+    content: '';
+    position: absolute;
+    background: white;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    top: -4px;
+    left: 3px;
+  }
+
+  .theme-switch .cloud-1::after {
+    content: '';
+    position: absolute;
+    background: white;
     width: 8px;
     height: 8px;
+    border-radius: 50%;
+    top: -3px;
+    right: 3px;
+  }
+
+  .theme-switch .cloud-2 {
+    width: 14px;
+    height: 6px;
+    bottom: 12px;
+    right: 8px;
+  }
+
+  .theme-switch .cloud-2::before {
+    content: '';
+    position: absolute;
+    background: white;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
     top: -3px;
     left: 2px;
   }
 
-  .theme-switch .cloud-1::after {
+  .theme-switch .cloud-2::after {
+    content: '';
+    position: absolute;
+    background: white;
     width: 6px;
     height: 6px;
+    border-radius: 50%;
     top: -2px;
     right: 2px;
   }
 
-  .theme-switch .cloud-2 {
-    width: 12px;
-    height: 7px;
-    bottom: 10px;
-    right: 8px;
-    border-radius: 7px;
-  }
-
-  .theme-switch .cloud-2::before {
-    width: 7px;
-    height: 7px;
-    top: -2px;
-    left: 2px;
-  }
-
-  .theme-switch .cloud-2::after {
-    width: 5px;
-    height: 5px;
-    top: -1px;
-    right: 1px;
-  }
-
-  /* Dark mode styles */
+  /* Dark mode - checked state */
   .theme-switch input:checked + .slider {
-    background: linear-gradient(to right, #1a1f3a 0%, #2d3561 100%);
+    background: linear-gradient(135deg, #2C3E50 0%, #34495E 50%, #4A5F7F 100%);
   }
 
   .theme-switch input:checked + .slider .celestial {
     transform: translateX(48px);
-    background: linear-gradient(135deg, #c7d3dd, #e8eef2);
+    background: linear-gradient(135deg, #E8E8E8, #C8D0D8);
     box-shadow: 
-      0 4px 12px rgba(0, 0, 0, 0.3),
-      inset -3px -3px 6px rgba(0, 0, 0, 0.1);
+      0 0 15px rgba(255, 255, 255, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
-  /* Show moon craters in dark mode */
+  /* Show moon details in dark mode */
   .theme-switch input:checked + .slider .crater {
     opacity: 1;
   }
@@ -330,44 +331,28 @@ All colors MUST be HSL.
   /* Show stars in dark mode */
   .theme-switch input:checked + .slider .star {
     opacity: 1;
-    animation: twinkle 2s infinite alternate;
   }
 
   /* Hide clouds in dark mode */
   .theme-switch input:checked + .slider .cloud {
     opacity: 0;
-    transform: translateX(-10px);
   }
 
-  /* Twinkle animation for stars */
-  @keyframes twinkle {
-    0% { opacity: 0.3; }
-    50% { opacity: 1; }
-    100% { opacity: 0.5; }
-  }
-
-  .theme-switch .star-1 { animation-delay: 0s; }
-  .theme-switch .star-2 { animation-delay: 0.3s; }
-  .theme-switch .star-3 { animation-delay: 0.6s; }
-  .theme-switch .star-4 { animation-delay: 0.9s; }
-  .theme-switch .star-5 { animation-delay: 1.2s; }
-
-  /* Hover effects */
+  /* Hover effect */
   .theme-switch:hover .slider {
-    box-shadow: 
-      inset 0 2px 8px rgba(0, 0, 0, 0.15),
-      0 0 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
+  /* Active press effect */
   .theme-switch:active .slider .celestial {
-    transform: scale(0.95);
+    transform: scale(0.92);
   }
 
   .theme-switch input:checked:active + .slider .celestial {
-    transform: translateX(48px) scale(0.95);
+    transform: translateX(48px) scale(0.92);
   }
 
-  /* Smooth body transition for theme changes */
+  /* Smooth theme transitions */
   body {
     transition: background-color 0.5s ease, color 0.5s ease;
   }
