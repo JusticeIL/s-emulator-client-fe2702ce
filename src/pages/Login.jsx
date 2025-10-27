@@ -79,7 +79,7 @@ export default function Login() {
       </div>
 
       {/* Login Card */}
-      <Card className="w-1/2">
+      <Card style={{ width: '50%' }} className="min-w-[400px]">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">S-Emulator</CardTitle>
           <CardDescription>Enter your username to login</CardDescription>
