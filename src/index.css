@@ -121,12 +121,12 @@ All colors MUST be HSL.
     }
   }
 
-  /* Elegant theme toggle with Light/Dark labels */
+  /* iPhone-style theme toggle switch */
   .theme-switch {
     position: relative;
     display: inline-block;
-    width: 80px;
-    height: 40px;
+    width: 60px;
+    height: 34px;
     cursor: pointer;
   }
 
@@ -143,85 +143,96 @@ All colors MUST be HSL.
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(145deg, hsl(210, 100%, 70%), hsl(210, 100%, 60%));
-    border-radius: 40px;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 
-      0 4px 12px rgba(59, 130, 246, 0.3),
-      inset 0 2px 4px rgba(255, 255, 255, 0.2);
-    overflow: hidden;
+    background-color: hsl(var(--muted));
+    border-radius: 34px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .theme-switch .slider:before {
     position: absolute;
     content: "";
-    height: 32px;
-    width: 32px;
+    height: 26px;
+    width: 26px;
     left: 4px;
     bottom: 4px;
-    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    background-color: white;
     border-radius: 50%;
-    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-    box-shadow: 
-      0 4px 16px rgba(0, 0, 0, 0.15),
-      0 2px 8px rgba(0, 0, 0, 0.1),
-      inset 0 -2px 4px rgba(0, 0, 0, 0.05);
-    z-index: 2;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 
   .theme-switch input:checked + .slider {
-    background: linear-gradient(145deg, hsl(210, 100%, 70%), hsl(210, 100%, 60%));
+    background-color: hsl(220, 15%, 20%);
+  }
+
+  .dark .theme-switch input:checked + .slider {
+    background-color: hsl(var(--primary));
   }
 
   .theme-switch input:checked + .slider:before {
-    transform: translateX(40px);
+    transform: translateX(26px);
   }
 
-  /* Decorative dots inside the toggle */
-  .theme-switch .decorative-dot {
+  /* Sun and Moon icons */
+  .theme-switch .theme-icon {
     position: absolute;
-    background: rgba(255, 255, 255, 0.4);
-    border-radius: 50%;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 1;
   }
 
-  .theme-switch .dot-1 {
-    width: 8px;
-    height: 8px;
-    top: 12px;
-    right: 16px;
-  }
-
-  .theme-switch .dot-2 {
-    width: 5px;
-    height: 5px;
-    top: 22px;
-    right: 10px;
-  }
-
-  .theme-switch input:checked + .slider .dot-1 {
-    right: auto;
-    left: 16px;
-  }
-
-  .theme-switch input:checked + .slider .dot-2 {
-    right: auto;
+  .theme-switch .sun-icon {
     left: 10px;
+    color: hsl(var(--warning));
+    opacity: 1;
   }
 
+  .theme-switch .moon-icon {
+    right: 10px;
+    color: white;
+    opacity: 0;
+  }
+
+  .theme-switch input:checked + .slider .sun-icon {
+    opacity: 0;
+    transform: translateY(-50%) rotate(-90deg) scale(0.5);
+  }
+
+  .theme-switch input:checked + .slider .moon-icon {
+    opacity: 1;
+    transform: translateY(-50%) rotate(0deg) scale(1);
+  }
+
+  .theme-switch input:not(:checked) + .slider .sun-icon {
+    opacity: 1;
+    transform: translateY(-50%) rotate(0deg) scale(1);
+  }
+
+  .theme-switch input:not(:checked) + .slider .moon-icon {
+    opacity: 0;
+    transform: translateY(-50%) rotate(90deg) scale(0.5);
+  }
+
+  /* Hover effects */
   .theme-switch:hover .slider {
     box-shadow: 
-      0 6px 20px rgba(59, 130, 246, 0.4),
-      inset 0 2px 4px rgba(255, 255, 255, 0.25);
-    transform: scale(1.02);
+      inset 0 2px 4px rgba(0, 0, 0, 0.15),
+      0 0 8px rgba(0, 0, 0, 0.1);
   }
 
   .theme-switch:active .slider:before {
-    width: 36px;
+    width: 30px;
   }
 
   /* Smooth body transition for theme changes */
   body {
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.5s ease, color 0.5s ease;
+  }
+  
+  * {
+    transition: background-color 0.3s ease, border-color 0.3s ease;
   }
 }

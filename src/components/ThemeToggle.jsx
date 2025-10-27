@@ -6,25 +6,17 @@ export function ThemeToggle() {
   const isDark = theme === 'dark';
 
   return (
-    <div className="flex items-center gap-4">
-      <span className={`text-sm font-semibold transition-colors ${!isDark ? 'text-foreground' : 'text-muted-foreground'}`}>
-        Light
+    <label className="theme-switch">
+      <input 
+        type="checkbox" 
+        checked={isDark}
+        onChange={toggleTheme}
+        aria-label="Toggle theme"
+      />
+      <span className="slider">
+        <Sun className="theme-icon sun-icon" size={14} />
+        <Moon className="theme-icon moon-icon" size={14} />
       </span>
-      <label className="theme-switch">
-        <input 
-          type="checkbox" 
-          checked={isDark}
-          onChange={toggleTheme}
-          aria-label="Toggle theme"
-        />
-        <span className="slider">
-          <span className="decorative-dot dot-1"></span>
-          <span className="decorative-dot dot-2"></span>
-        </span>
-      </label>
-      <span className={`text-sm font-semibold transition-colors ${isDark ? 'text-foreground' : 'text-muted-foreground'}`}>
-        Dark
-      </span>
-    </div>
+    </label>
   );
 }
