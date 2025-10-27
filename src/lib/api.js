@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:8080/S-emulator/api';
+// Base API URL - automatically uses proxy in dev mode or VITE_API_URL in production
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Helper function to make API requests
 export async function fetchAPI(endpoint, options = {}) {
