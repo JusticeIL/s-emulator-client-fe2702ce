@@ -10,21 +10,26 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/execution" element={<Execution />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  console.log("App component rendering");
+  
+  return (
+    <div style={{ 
+      minHeight: '100vh', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      background: '#1a1a1a',
+      color: '#ffffff',
+      fontSize: '24px',
+      fontFamily: 'sans-serif'
+    }}>
+      <div>
+        <h1>S-Emulator Loading...</h1>
+        <p>If you see this, the app is working!</p>
+      </div>
+    </div>
+  );
+};
 
 export default App;

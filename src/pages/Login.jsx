@@ -14,6 +14,8 @@ export default function Login() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  console.log("Login page rendering");
+
   const handleLogin = async (e) => {
     e.preventDefault();
     
