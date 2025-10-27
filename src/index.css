@@ -125,8 +125,8 @@ All colors MUST be HSL.
   .theme-switch {
     position: relative;
     display: inline-block;
-    width: 64px;
-    height: 34px;
+    width: 56px;
+    height: 30px;
     cursor: pointer;
   }
 
@@ -144,7 +144,7 @@ All colors MUST be HSL.
     right: 0;
     bottom: 0;
     background: linear-gradient(145deg, hsl(var(--muted)), hsl(var(--muted-foreground) / 0.1));
-    border-radius: 34px;
+    border-radius: 30px;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1.5px solid hsl(var(--border) / 0.5);
     box-shadow: 
@@ -155,10 +155,10 @@ All colors MUST be HSL.
   .theme-switch .slider:before {
     position: absolute;
     content: "";
-    height: 26px;
-    width: 26px;
+    height: 22px;
+    width: 22px;
     left: 3px;
-    bottom: 3px;
+    bottom: 2.5px;
     background: linear-gradient(145deg, hsl(var(--background)), hsl(var(--card)));
     border-radius: 50%;
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -178,7 +178,7 @@ All colors MUST be HSL.
   }
 
   .theme-switch input:checked + .slider:before {
-    transform: translateX(30px);
+    transform: translateX(26px);
     box-shadow: 
       0 3px 12px rgba(0, 0, 0, 0.2),
       0 2px 4px rgba(0, 0, 0, 0.15),
@@ -187,8 +187,8 @@ All colors MUST be HSL.
 
   .theme-switch .icon {
     position: absolute;
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     top: 50%;
     transform: translateY(-50%);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -197,14 +197,14 @@ All colors MUST be HSL.
   }
 
   .theme-switch .sun-icon {
-    left: 9px;
+    left: 8px;
     color: hsl(var(--warning));
     opacity: 0;
     transform: translateY(-50%) rotate(-30deg) scale(0.8);
   }
 
   .theme-switch .moon-icon {
-    right: 9px;
+    right: 8px;
     color: hsl(var(--primary-foreground));
     opacity: 0;
     transform: translateY(-50%) rotate(30deg) scale(0.8);
@@ -236,7 +236,7 @@ All colors MUST be HSL.
   }
 
   .theme-switch:active .slider:before {
-    width: 28px;
+    width: 24px;
   }
 
   /* Smooth body transition for theme changes */

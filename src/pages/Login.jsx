@@ -78,25 +78,26 @@ export default function Login() {
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
-      <Card className="w-full max-w-[280px]">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">S-Emulator</CardTitle>
-          <CardDescription>Enter your username to login</CardDescription>
+      <Card className="w-full max-w-[220px]">
+        <CardHeader className="space-y-1 pb-4">
+          <CardTitle className="text-xl font-bold">S-Emulator</CardTitle>
+          <CardDescription className="text-xs">Enter your username</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+          <form onSubmit={handleLogin} className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="username" className="text-sm">Username</Label>
               <Input
                 id="username"
                 type="text"
-                placeholder="Enter username"
+                placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={loading}
+                className="h-9"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full h-9" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
