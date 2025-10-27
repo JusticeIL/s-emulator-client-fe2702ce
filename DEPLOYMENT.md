@@ -10,19 +10,26 @@ The web client can connect to your Java backend in two ways:
 
 ## Local Development Setup
 
-1. **Start your Java backend** on port 8080:
+1. **Start your Tomcat/Java backend** on port 8080:
    ```bash
-   # From your S-Emulator Java project
-   java -jar S-emulator.jar
+   # Make sure your S-emulator is running on localhost:8080/S-emulator
+   # Example: Start Tomcat with deployed S-emulator.war
    ```
 
-2. **Start the web client**:
+2. **Configure the web client**:
+   ```bash
+   # Create a .env file in the project root
+   # Add this line:
+   VITE_API_URL=http://localhost:8080/S-emulator/api
+   ```
+
+3. **Install dependencies and start the web client**:
    ```bash
    npm install
    npm run dev
    ```
 
-3. The web client will run on `http://localhost:5173` and automatically proxy API requests to your local Java backend.
+4. The web client will run on `http://localhost:5173` and connect to your Java backend on port 8080.
 
 ## Production Deployment
 
