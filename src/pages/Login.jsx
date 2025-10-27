@@ -79,7 +79,7 @@ export default function Login() {
       </div>
 
       {/* Login Card */}
-      <Card className="w-[400px]">
+      <Card className="w-1/2">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">S-Emulator</CardTitle>
           <CardDescription>Enter your username to login</CardDescription>
