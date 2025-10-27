@@ -47,7 +47,7 @@ export function ThemeToggle() {
           border: `2px solid ${isDark ? 'hsl(189, 95%, 52%)' : 'hsl(210, 20%, 50%)'}`,
           padding: '2px',
           position: 'relative',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+          boxShadow: isDark ? '0 2px 8px rgba(0,0,0,0.2)' : 'none',
           transition: 'all 0.3s ease',
         }}
       >
