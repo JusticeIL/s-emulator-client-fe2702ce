@@ -1,3 +1,4 @@
+// S-Emulator API Client v1.0.1
 // Base API URL - Update this to match your S-Emulator server
 // For local testing, use: 'http://localhost:8080/S-emulator/api'
 // For production, set VITE_API_URL environment variable
