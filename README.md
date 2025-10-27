@@ -141,27 +141,18 @@ src/
 
 ## 📚 Additional Resources
 
-- **[JAVA_CLIENT_EXAMPLE.md](./JAVA_CLIENT_EXAMPLE.md)**: Complete JavaFX client implementation with working example
-- **[Client.jar](./public/examples/Client.jar)**: Downloadable JavaFX client application (Java 8+ compatible)
+- **[JAVA_CLIENT_EXAMPLE.md](./JAVA_CLIENT_EXAMPLE.md)**: Complete JavaFX client implementation code examples
 - **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)**: Full REST API specification with all endpoints and payloads
+- **[QUICK_START.md](./QUICK_START.md)**: Get started guide for both web and Java clients
 
-### Running the Java Client Example
+### Java Client Implementation
 
-```bash
-# Download and run the JavaFX client
-java -jar public/examples/Client.jar
-
-# Or with JavaFX modules (Java 11+)
-java --module-path /path/to/javafx-sdk/lib \
-  --add-modules javafx.controls,javafx.fxml \
-  -jar public/examples/Client.jar
-```
-
-The Java client demonstrates:
+The JAVA_CLIENT_EXAMPLE.md provides complete source code for:
 - Complete API integration with proper cookie handling
 - User authentication and program management
 - Debug mode with breakpoints
 - Variable monitoring and execution control
+- Maven dependencies and project setup
 
 ## 🐛 Troubleshooting
 

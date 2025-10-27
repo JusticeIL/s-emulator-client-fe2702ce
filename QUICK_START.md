@@ -34,28 +34,24 @@ Navigate to `http://localhost:5173` (or the URL shown in terminal)
 
 ---
 
-## ☕ Java Client Setup (2 minutes)
+## ☕ Java Client Setup
 
-### Quick Run (Easiest)
-```bash
-# Just download and run
-java -jar public/examples/Client.jar
-```
+### Build Your Own Client
+
+See **[JAVA_CLIENT_EXAMPLE.md](./JAVA_CLIENT_EXAMPLE.md)** for complete source code including:
+
+1. **ApiClient.java** - Full REST API client implementation
+2. **LoginController.java** - JavaFX UI controller example  
+3. **Maven dependencies** - All required libraries
+4. **Usage examples** - Code samples for every endpoint
 
 **Requirements:**
 - Java 8 or higher
+- Maven or Gradle for building
+- JavaFX libraries (included in Java 8, separate download for Java 11+)
 - S-Emulator server running at `http://localhost:8080/S-emulator`
 
-### With JavaFX Modules (Java 11+)
-```bash
-# Download JavaFX SDK from https://gluonhq.com/products/javafx/
-# Then run:
-java --module-path /path/to/javafx-sdk/lib \
-     --add-modules javafx.controls,javafx.fxml \
-     -jar public/examples/Client.jar
-```
-
-**That's it!** The JavaFX client will open automatically. 🎉
+**That's it!** Follow the examples to build your JavaFX client. 🎉
 
 ---
 
@@ -85,9 +81,9 @@ java --module-path /path/to/javafx-sdk/lib \
   - Error handling
   - Testing with cURL/Postman
 
-### Downloads
-- **[Client.jar](./public/examples/Client.jar)** - Ready-to-run JavaFX client
-- **[S-emulator.war](./user-uploads://S-emulator.war)** - Server application
+### Code Examples
+- **Complete Java client source code** - See JAVA_CLIENT_EXAMPLE.md
+- **All API endpoints documented** - See API_DOCUMENTATION.md
 
 ---
 
@@ -99,13 +95,12 @@ java --module-path /path/to/javafx-sdk/lib \
 3. Click "Run" on any program
 4. View execution results
 
-### Debug with Java Client
-1. Run Client.jar
-2. Login with username
-3. Select program
-4. Click "Debug Mode"
-5. Set breakpoints
-6. Step through execution
+### Build a Java Client
+1. See JAVA_CLIENT_EXAMPLE.md for complete code
+2. Copy ApiClient.java to your project
+3. Add Maven dependencies
+4. Implement UI with JavaFX
+5. Use debug mode with breakpoints
 
 ### Add New Program to Server
 1. Prepare program XML file
@@ -150,10 +145,11 @@ private static final String BASE_URL = "http://localhost:8080/S-emulator/api";
 2. Check browser console for CORS errors
 3. Verify API_BASE_URL in `src/lib/api.js`
 
-### Java Client Won't Start
+### Building Java Client
 1. Check Java version: `java -version` (need 8+)
-2. Try with full JavaFX module path
-3. Check server is accessible
+2. Add JavaFX dependencies to Maven/Gradle
+3. See JAVA_CLIENT_EXAMPLE.md for complete setup
+4. Check server is accessible
 
 ### Login Fails
 1. Username must match pattern: `[A-Za-z0-9_.-]`
