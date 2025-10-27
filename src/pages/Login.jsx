@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,7 +73,7 @@ export default function Login() {
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
-      <Card className="w-full sm:w-auto sm:min-w-[400px]">
+      <Card className="w-full max-w-[200px]">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">S-Emulator</CardTitle>
           <CardDescription>Enter your username to login</CardDescription>
