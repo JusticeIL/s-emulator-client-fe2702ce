@@ -46,6 +46,15 @@ All colors MUST be HSL.
 
     --instruction-compatible: 142 76% 36%;
     --instruction-incompatible: 0 72% 51%;
+
+    /* iOS Toggle variables */
+    --toggle-width: 56px;
+    --toggle-height: 32px;
+    --toggle-knob: 26px;
+    --toggle-bg-off: #e6e6e6;
+    --toggle-bg-on: #1e88e5;
+    --toggle-knob-color: #fff;
+    --toggle-shadow: 0 2px 6px rgba(0,0,0,0.15);
   }
 
   .dark {
@@ -122,17 +131,8 @@ All colors MUST be HSL.
   }
 
   /* iOS-style Toggle */
-  :root {
-    --toggle-width: 56px;
-    --toggle-height: 32px;
-    --toggle-knob: 26px;
-    --toggle-bg-off: #e6e6e6;
-    --toggle-bg-on: #1e88e5;
-    --toggle-knob-color: #fff;
-    --toggle-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  }
-
   .ios-toggle {
+    display: block;
     width: var(--toggle-width);
     height: var(--toggle-height);
     border-radius: calc(var(--toggle-height) / 2);
@@ -145,6 +145,7 @@ All colors MUST be HSL.
     transition: background .22s ease;
     -webkit-tap-highlight-color: transparent;
     outline: none;
+    flex-shrink: 0;
   }
 
   /* knob */
