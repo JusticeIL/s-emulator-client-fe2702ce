@@ -26,7 +26,7 @@ export function ThemeToggle() {
         style={{
           fontSize: '14px',
           fontWeight: '500',
-          color: 'hsl(210, 40%, 98%)',
+          color: isDark ? 'hsl(210, 40%, 98%)' : 'hsl(0, 0%, 0%)',
           opacity: isDark ? 0 : 1,
           transform: isDark ? 'translateX(-10px)' : 'translateX(0)',
           transition: 'all 0.3s ease',
