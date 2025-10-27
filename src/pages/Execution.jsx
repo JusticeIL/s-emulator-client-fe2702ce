@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { fetchProgram, startExecution, fetchExecutionState, stopExecution, getUsernameCookie } from "@/lib/api";
+import { fetchActiveProgram, executeProgram, getUsernameCookie } from "@/lib/api";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Loader2, ArrowLeft, Play, Square } from "lucide-react";
+import { Loader2, ArrowLeft, Play } from "lucide-react";
 
 export default function Execution() {
-  const [searchParams] = useSearchParams();
-  const programName = searchParams.get("program");
   const [program, setProgram] = useState(null);
-  const [executionState, setExecutionState] = useState(null);
   const [loading, setLoading] = useState(true);
   const [executing, setExecuting] = useState(false);
   const navigate = useNavigate();
@@ -26,14 +23,18 @@ export default function Execution() {
       return;
     }
 
-    if (!programName) {
-      navigate("/dashboard");
-      return;
-    }
-
     const loadProgram = async () => {
       try {
-        const data = await fetchProgram(programName);
+        const data = await fetchActiveProgram();
+        if (!data) {
+          toast({
+            title: "No Program",
+            description: "No active program selected",
+            variant: "destructive",
+          });
+          navigate("/dashboard");
+          return;
+        }
         setProgram(data);
       } catch (error) {
         toast({
@@ -48,70 +49,30 @@ export default function Execution() {
     };
 
     loadProgram();
-  }, [programName, navigate, toast]);
-
-  useEffect(() => {
-    let interval;
-    if (executing) {
-      interval = setInterval(async () => {
-        try {
-          const state = await fetchExecutionState();
-          setExecutionState(state);
-          
-          if (state.finished) {
-            setExecuting(false);
-            toast({
-              title: "Execution Complete",
-              description: `Program finished with ${state.cycleCounter || 0} cycles`,
-            });
-          }
-        } catch (error) {
-          console.error("Failed to fetch execution state:", error);
-        }
-      }, 2000);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [executing, toast]);
+  }, [navigate, toast]);
 
   const handleStartExecution = async () => {
     try {
-      await startExecution(programName);
       setExecuting(true);
+      const result = await executeProgram({}, program.minimalArchitectureNeededForRun || 'GEN_A');
+      setProgram(result);
       toast({
-        title: "Execution Started",
-        description: "Program is now running",
+        title: "Execution Complete",
+        description: `Program finished in ${result.currentCycles} cycles`,
       });
+      setExecuting(false);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to start execution",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleStopExecution = async () => {
-    try {
-      await stopExecution();
       setExecuting(false);
       toast({
-        title: "Execution Stopped",
-        description: "Program execution has been stopped",
-      });
-    } catch (error) {
-      toast({
         title: "Error",
-        description: "Failed to stop execution",
+        description: "Failed to execute program",
         variant: "destructive",
       });
     }
   };
 
   const isInstructionCompatible = (instruction) => {
-    const compatible = executionState?.architectureCompatible || program?.architectureCompatible || [];
+    const compatible = program?.minimalArchitectureNeededForRun || [];
     return compatible.includes(instruction.opcode);
   };
 
@@ -133,31 +94,33 @@ export default function Execution() {
               Back to Dashboard
             </Button>
             <div>
-              <h1 className="text-3xl font-bold">{programName}</h1>
-              {program?.architectureGeneration && (
+              <h1 className="text-3xl font-bold">{program?.programName}</h1>
+              {program?.minimalArchitectureNeededForRun && (
                 <p className="text-muted-foreground mt-1">
-                  Architecture: {program.architectureGeneration}
+                  Architecture: {program.minimalArchitectureNeededForRun}
                 </p>
               )}
             </div>
           </div>
           <div className="flex gap-2">
             <ThemeToggle />
-            {!executing ? (
-              <Button onClick={handleStartExecution}>
-                <Play className="h-4 w-4 mr-2" />
-                Run Program
-              </Button>
-            ) : (
-              <Button variant="destructive" onClick={handleStopExecution}>
-                <Square className="h-4 w-4 mr-2" />
-                Stop
-              </Button>
-            )}
+            <Button onClick={handleStartExecution} disabled={executing}>
+              {executing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Executing...
+                </>
+              ) : (
+                <>
+                  <Play className="h-4 w-4 mr-2" />
+                  Run Program
+                </>
+              )}
+            </Button>
           </div>
         </div>
 
-        {executing && (
+        {program?.status === 'running' && (
           <Card className="border-primary">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
@@ -165,8 +128,8 @@ export default function Execution() {
                 <div className="flex-1">
                   <p className="font-medium">Executing...</p>
                   <p className="text-sm text-muted-foreground">
-                    Current Instruction: {executionState?.currentInstructionId || 'N/A'} | 
-                    Cycles: {executionState?.cycleCounter || 0}
+                    Current Line: {program.currentLine || 0} | 
+                    Cycles: {program.currentCycles || 0}
                   </p>
                 </div>
               </div>
@@ -174,14 +137,14 @@ export default function Execution() {
           </Card>
         )}
 
-        {executionState?.variables && (
+        {program?.variables && Object.keys(program.variables).length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle>Variables</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-4">
-                {Object.entries(executionState.variables).map(([key, value]) => (
+                {Object.entries(program.variables).map(([key, value]) => (
                   <Badge key={key} variant="outline">
                     {key}: {value}
                   </Badge>
@@ -211,19 +174,19 @@ export default function Execution() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {program.instructions.map((instruction) => {
-                    const isCurrent = executionState?.currentInstructionId === instruction.id;
+                  {program.instructions.map((instruction, index) => {
+                    const isCurrent = program.currentLine === index + 1;
                     const compatible = isInstructionCompatible(instruction);
                     
                     return (
                       <TableRow
-                        key={instruction.id}
+                        key={index}
                         className={`
                           ${isCurrent ? 'bg-primary/20 border-l-4 border-l-primary' : ''}
                           ${compatible ? 'instruction-compatible' : 'instruction-incompatible'}
                         `}
                       >
-                        <TableCell className="font-medium">{instruction.id}</TableCell>
+                        <TableCell className="font-medium">{index + 1}</TableCell>
                         <TableCell>{instruction.label || '-'}</TableCell>
                         <TableCell>
                           <Badge variant={compatible ? "default" : "destructive"}>

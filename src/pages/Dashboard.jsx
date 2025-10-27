@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { fetchPrograms, getUsernameCookie, deleteUsernameCookie } from "@/lib/api";
+import { fetchSharedPrograms, getUsernameCookie, deleteUsernameCookie } from "@/lib/api";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Loader2, LogOut } from "lucide-react";
 
@@ -25,7 +25,7 @@ export default function Dashboard() {
 
     const loadPrograms = async () => {
       try {
-        const data = await fetchPrograms();
+        const data = await fetchSharedPrograms();
         setPrograms(Array.isArray(data) ? data : []);
       } catch (error) {
         toast({
@@ -50,8 +50,32 @@ export default function Dashboard() {
     navigate("/");
   };
 
-  const handleRunProgram = (programName) => {
-    navigate(`/execution?program=${encodeURIComponent(programName)}`);
+  const handleRunProgram = async (programName) => {
+    try {
+      // Set the program as active before navigating
+      const response = await fetch(`http://localhost:8080/S-emulator/api/program/active`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ programName }),
+      });
+      
+      if (response.ok) {
+        navigate('/execution');
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to set active program",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to set active program",
+        variant: "destructive",
+      });
+    }
   };
 
   if (loading) {
@@ -100,13 +124,13 @@ export default function Dashboard() {
                 <TableBody>
                   {programs.map((program, index) => (
                     <TableRow key={index}>
-                      <TableCell className="font-medium">{program.name || 'Unknown'}</TableCell>
-                      <TableCell>{program.expansionLevel || 'N/A'}</TableCell>
-                      <TableCell>{program.cycles || 0}</TableCell>
+                      <TableCell className="font-medium">{program.programName || 'Unknown'}</TableCell>
+                      <TableCell>{program.maxProgramLevel || 0}</TableCell>
+                      <TableCell>{program.currentCycles || 0}</TableCell>
                       <TableCell>
                         <Button 
                           size="sm" 
-                          onClick={() => handleRunProgram(program.name)}
+                          onClick={() => handleRunProgram(program.programName)}
                         >
                           Run
                         </Button>
