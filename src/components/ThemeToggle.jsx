@@ -1,4 +1,3 @@
-import { Moon, Sun } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 
 export function ThemeToggle() {
@@ -14,8 +13,23 @@ export function ThemeToggle() {
         aria-label="Toggle theme"
       />
       <span className="slider">
-        <Sun className="theme-icon sun-icon" size={14} />
-        <Moon className="theme-icon moon-icon" size={14} />
+        {/* Stars for dark mode */}
+        <span className="star star-1"></span>
+        <span className="star star-2"></span>
+        <span className="star star-3"></span>
+        <span className="star star-4"></span>
+        <span className="star star-5"></span>
+        
+        {/* Clouds for light mode */}
+        <span className="cloud cloud-1"></span>
+        <span className="cloud cloud-2"></span>
+        
+        {/* Sun/Moon circle with details */}
+        <span className="celestial">
+          <span className="crater crater-1"></span>
+          <span className="crater crater-2"></span>
+          <span className="crater crater-3"></span>
+        </span>
       </span>
     </label>
   );
