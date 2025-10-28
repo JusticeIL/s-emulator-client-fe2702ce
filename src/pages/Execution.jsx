@@ -18,7 +18,8 @@ export default function Execution() {
   const [loading, setLoading] = useState(true);
   const [executing, setExecuting] = useState(false);
   const [selectedArchitecture, setSelectedArchitecture] = useState('IV');
-  const [programArgs, setProgramArgs] = useState({});
+  const [programArgs, setProgramArgs] = useState([]);
+  const [expansionLevel, setExpansionLevel] = useState(0);
   const [username, setUsername] = useState("");
   const [currentUserCredits, setCurrentUserCredits] = useState(0);
   const navigate = useNavigate();
@@ -61,12 +62,8 @@ export default function Execution() {
         }
         
         // Initialize program arguments with empty values
-        if (data.arguments) {
-          const initialArgs = {};
-          Object.keys(data.arguments).forEach(argName => {
-            initialArgs[argName] = '';
-          });
-          setProgramArgs(initialArgs);
+        if (data.programXArguments && Array.isArray(data.programXArguments)) {
+          setProgramArgs(data.programXArguments.map(arg => ({ name: arg, value: '' })));
         }
       } catch (error) {
         toast({
@@ -85,16 +82,25 @@ export default function Execution() {
   }, [navigate, toast]);
 
   const handleStartExecution = async () => {
+    // Validate architecture compatibility
+    if (program?.minimalArchitectureNeededForRun && 
+        compareArchitectures(selectedArchitecture, program.minimalArchitectureNeededForRun) < 0) {
+      toast({
+        title: "Incompatible Architecture",
+        description: `This program requires at least Architecture ${program.minimalArchitectureNeededForRun}`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Validate required arguments
-    if (program?.arguments) {
-      const missingArgs = Object.keys(program.arguments).filter(
-        argName => !programArgs[argName] || programArgs[argName].trim() === ''
-      );
+    if (programArgs && programArgs.length > 0) {
+      const missingArgs = programArgs.filter(arg => !arg.value || arg.value.trim() === '');
       
       if (missingArgs.length > 0) {
         toast({
           title: "Missing Arguments",
-          description: `Please provide values for: ${missingArgs.join(', ')}`,
+          description: `Please provide values for: ${missingArgs.map(a => a.name).join(', ')}`,
           variant: "destructive",
         });
         return;
@@ -103,7 +109,11 @@ export default function Execution() {
 
     try {
       setExecuting(true);
-      const result = await executeProgram(programArgs, selectedArchitecture);
+      const argsObj = {};
+      programArgs.forEach(arg => {
+        argsObj[arg.name] = arg.value;
+      });
+      const result = await executeProgram(argsObj, selectedArchitecture);
       setProgram(result);
       toast({
         title: "Execution Complete",
@@ -121,16 +131,21 @@ export default function Execution() {
   };
 
   const isInstructionCompatible = (instruction) => {
-    if (!instruction.architecture || !selectedArchitecture) return true;
-    // Instruction is compatible if its required architecture <= selected architecture
-    return compareArchitectures(instruction.architecture, selectedArchitecture) <= 0;
+    if (!instruction.ArchitectureGeneration || !selectedArchitecture) return true;
+    return compareArchitectures(instruction.ArchitectureGeneration, selectedArchitecture) <= 0;
   };
 
-  const handleArgChange = (argName, value) => {
-    setProgramArgs(prev => ({
-      ...prev,
-      [argName]: value
-    }));
+  const handleArgChange = (index, value) => {
+    setProgramArgs(prev => {
+      const newArgs = [...prev];
+      newArgs[index] = { ...newArgs[index], value };
+      return newArgs;
+    });
+  };
+
+  const isArchitectureCompatible = () => {
+    if (!program?.minimalArchitectureNeededForRun) return true;
+    return compareArchitectures(selectedArchitecture, program.minimalArchitectureNeededForRun) >= 0;
   };
 
   if (loading) {
@@ -147,20 +162,13 @@ export default function Execution() {
       <div className="border-b bg-card">
         <div className="max-w-[1800px] mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
-            {/* Left: Username */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">{username}</span>
-              <span className="text-sm text-muted-foreground">Username</span>
-            </div>
-            
             {/* Center: Program Name */}
-            <div className="text-center flex-1">
-              <h1 className="text-xl font-bold">Divide</h1>
-              <p className="text-sm text-primary">{program?.programName || "Program Name"}</p>
+            <div className="flex-1 text-center">
+              <h1 className="text-xl font-bold">{program?.programName || "Program Name"}</h1>
             </div>
             
             {/* Right: Available Credits + Theme Toggle */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 absolute right-6">
               <div className="text-right">
                 <span className="text-sm text-muted-foreground">Available Credits: </span>
                 <span className="text-sm font-semibold text-primary">{currentUserCredits}</span>
@@ -171,44 +179,56 @@ export default function Execution() {
         </div>
       </div>
 
-      {/* Main Content - Two Column Grid */}
-      <div className="max-w-[1800px] mx-auto px-6 py-6">
-        <div className="grid grid-cols-2 gap-6 h-[calc(100vh-180px)]">
+      {/* Main Content */}
+      <div className="max-w-[1800px] mx-auto px-6 py-6 h-[calc(100vh-120px)]">
+        <div className="grid grid-cols-2 gap-6 h-full">
           {/* Left Column - Instructions Table */}
-          <Card className="flex flex-col h-full">
-            <CardHeader className="pb-3 flex-shrink-0">
-              <CardTitle className="text-lg">Instructions</CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 flex flex-col min-h-0 p-0">
-              {!program?.instructions || program.instructions.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">No instructions available</p>
-              ) : (
-                <>
+          <div className="flex flex-col h-full">
+            {/* Expansion Level Selection - 5% */}
+            <div className="h-[5%] flex items-center justify-center gap-4 mb-2">
+              <Label className="text-sm">Expansion Level:</Label>
+              <Select value={expansionLevel.toString()} onValueChange={(val) => setExpansionLevel(parseInt(val))}>
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: (program?.absoluteMaxExpandLevel || 0) + 1 }, (_, i) => (
+                    <SelectItem key={i} value={i.toString()}>
+                      {i}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span className="text-sm text-muted-foreground">Max: {program?.absoluteMaxExpandLevel || 0}</span>
+            </div>
+
+            {/* Instructions Table - 90% */}
+            <Card className="flex-1 h-[90%] flex flex-col overflow-hidden">
+              <CardContent className="flex-1 flex flex-col min-h-0 p-0">
+                {!program?.programInstructions || program.programInstructions.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">No instructions available</p>
+                ) : (
                   <ScrollArea className="flex-1">
-                    <div className="px-6">
+                    <div className="px-6 pt-6">
                       <Table>
                         <TableHeader className="sticky top-0 bg-card z-10">
                           <TableRow>
                             <TableHead className="w-12">#</TableHead>
                             <TableHead className="w-16">Type</TableHead>
                             <TableHead className="w-24">Label</TableHead>
-                            <TableHead className="flex-1">Instruction</TableHead>
+                            <TableHead>Instruction</TableHead>
                             <TableHead className="w-20">Cycles</TableHead>
                             <TableHead className="w-28">Architecture</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {program.instructions.map((instruction, index) => {
-                            const isCurrent = program.currentLine === index + 1;
+                          {program.programInstructions.map((instruction, index) => {
                             const compatible = isInstructionCompatible(instruction);
                             
                             return (
                               <TableRow
                                 key={index}
-                                className={`
-                                  ${isCurrent ? 'bg-primary/20 border-l-4 border-l-primary' : ''}
-                                  ${!compatible ? 'instruction-incompatible' : ''}
-                                `}
+                                className={!compatible ? 'opacity-50' : ''}
                               >
                                 <TableCell className="font-mono text-xs">{index + 1}</TableCell>
                                 <TableCell>
@@ -216,10 +236,10 @@ export default function Execution() {
                                     {instruction.type || 'S'}
                                   </Badge>
                                 </TableCell>
-                                <TableCell className="text-xs">{instruction.label || '-'}</TableCell>
-                                <TableCell className="font-mono text-xs">{instruction.instruction || instruction.opcode || '-'}</TableCell>
+                                <TableCell className="text-xs">{instruction.label?.labelName || '-'}</TableCell>
+                                <TableCell className="font-mono text-xs">{instruction.fullExpandedStringRepresentation || instruction.instruction || '-'}</TableCell>
                                 <TableCell className="text-xs">{instruction.cycles || '0'}</TableCell>
-                                <TableCell className="text-xs">{instruction.architecture || 'IV'}</TableCell>
+                                <TableCell className="text-xs">{instruction.ArchitectureGeneration || 'IV'}</TableCell>
                               </TableRow>
                             );
                           })}
@@ -227,168 +247,187 @@ export default function Execution() {
                       </Table>
                     </div>
                   </ScrollArea>
-                  
-                  {/* Info Line at Bottom */}
-                  <div className="border-t px-6 py-3 flex-shrink-0 bg-muted/30">
-                    <p className="text-xs text-muted-foreground text-center">
-                      {program.instructions.length > 0 && (
-                        <>
-                          Program contains {program.instructions.filter(i => i.type === 'B').length} Basic Instructions, {program.instructions.filter(i => i.type === 'S').length} Synthetic Instructions,{' '}
-                          {program.instructions.filter(i => i.architecture === 'III' || i.architecture === 'IV').length} Instructions in Architecture III, {program.instructions.filter(i => i.architecture === 'II' || i.architecture === 'III' || i.architecture === 'IV').length} Instructions in Architecture II and {program.instructions.length} Instructions in Architecture I.
-                        </>
-                      )}
-                    </p>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Right Column - Variables, Architecture, Arguments */}
-          <div className="flex flex-col gap-4 h-full">
-            {/* Buttons at Top */}
-            <div className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={() => {
-                // Reset args
-                if (program?.arguments) {
-                  const initialArgs = {};
-                  Object.keys(program.arguments).forEach(argName => {
-                    initialArgs[argName] = '';
-                  });
-                  setProgramArgs(initialArgs);
-                }
-              }}>
-                <RotateCcw className="h-4 w-4 mr-2" />
-                Setup New Run
-              </Button>
-              <Button 
-                onClick={handleStartExecution} 
-                disabled={executing}
-                className="bg-success hover:bg-success/90 text-success-foreground"
-              >
-                {executing ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Running...
-                  </>
-                ) : (
-                  <>
-                    <Play className="h-4 w-4 mr-2" />
-                    Run
-                  </>
                 )}
-              </Button>
-            </div>
-
-            {/* Variables Table */}
-            {program?.variables && Object.keys(program.variables).length > 0 && (
-              <Card className="flex-shrink-0">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Variables</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Value</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {Object.entries(program.variables).map(([key, value]) => (
-                        <TableRow key={key}>
-                          <TableCell className="font-mono text-sm">{key}</TableCell>
-                          <TableCell className="font-mono text-sm">{value}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Architecture Selection */}
-            <Card className="flex-shrink-0">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Architecture Selection</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Select value={selectedArchitecture} onValueChange={setSelectedArchitecture}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select architecture" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ARCHITECTURE_GENERATIONS.map(arch => (
-                      <SelectItem key={arch} value={arch}>
-                        Architecture {arch}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground mt-2">
-                  {program?.minimalArchitectureNeededForRun && (
-                    <>Required: {program.minimalArchitectureNeededForRun}</>
-                  )}
-                </p>
               </CardContent>
             </Card>
 
-            {/* Arguments Table */}
-            {program?.arguments && Object.keys(program.arguments).length > 0 && (
-              <Card className="flex-1 flex flex-col min-h-0">
+            {/* Summary Lines - 5% */}
+            <div className="h-[5%] border-t bg-muted/30 px-4 flex flex-col justify-center">
+              {program?.programInstructions && program.programInstructions.length > 0 && (
+                <>
+                  <p className="text-xs text-muted-foreground text-center">
+                    {program.programInstructions.filter(i => i.type === 'B').length} Basic Instructions, {program.programInstructions.filter(i => i.type === 'S').length} Synthetic Instructions
+                  </p>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Architecture IV: {program.programInstructions.filter(i => i.ArchitectureGeneration === 'IV').length}, 
+                    III: {program.programInstructions.filter(i => i.ArchitectureGeneration === 'III').length}, 
+                    II: {program.programInstructions.filter(i => i.ArchitectureGeneration === 'II').length}, 
+                    I: {program.programInstructions.filter(i => i.ArchitectureGeneration === 'I').length}
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Right Column - Two Sub-Columns */}
+          <div className="grid grid-cols-2 gap-4 h-full">
+            {/* Left Sub-Column */}
+            <div className="flex flex-col h-full">
+              {/* Buttons - 5% */}
+              <div className="h-[5%] flex gap-2 mb-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    if (program?.programXArguments && Array.isArray(program.programXArguments)) {
+                      setProgramArgs(program.programXArguments.map(arg => ({ name: arg, value: '' })));
+                    }
+                  }}
+                  className="flex-1"
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  Setup New Run
+                </Button>
+                <Button 
+                  size="sm"
+                  onClick={handleStartExecution} 
+                  disabled={executing || !isArchitectureCompatible()}
+                  className="flex-1 bg-success hover:bg-success/90 text-success-foreground disabled:opacity-50"
+                >
+                  {executing ? (
+                    <>
+                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                      Running...
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-3 w-3 mr-1" />
+                      Run
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {/* Variables Table - 90% */}
+              <Card className="flex-1 h-[90%] flex flex-col overflow-hidden">
                 <CardHeader className="pb-3 flex-shrink-0">
-                  <CardTitle className="text-base">Argument Name</CardTitle>
+                  <CardTitle className="text-sm">Variables</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1 overflow-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Argument Name</TableHead>
-                        <TableHead>Value</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {Object.entries(program.arguments).map(([argName, argType]) => (
-                        <TableRow key={argName}>
-                          <TableCell className="font-mono text-sm">
-                            {argName}
-                            <span className="text-xs text-muted-foreground ml-2">({argType})</span>
-                          </TableCell>
-                          <TableCell>
-                            <Input
-                              type="text"
-                              value={programArgs[argName] || ''}
-                              onChange={(e) => handleArgChange(argName, e.target.value)}
-                              placeholder="0"
-                              className="h-8 text-sm"
-                            />
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                <CardContent className="flex-1 overflow-auto p-0">
+                  {program?.programVariablesCurrentState && program.programVariablesCurrentState.length > 0 ? (
+                    <ScrollArea className="h-full">
+                      <div className="px-6 pb-6">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="text-xs">Name</TableHead>
+                              <TableHead className="text-xs">Value</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {program.programVariablesCurrentState.map((variable, idx) => (
+                              <TableRow key={idx}>
+                                <TableCell className="font-mono text-xs">{variable.variableName}</TableCell>
+                                <TableCell className="font-mono text-xs">{variable.variableValue}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </ScrollArea>
+                  ) : (
+                    <p className="text-center text-muted-foreground text-xs py-4">No variables</p>
+                  )}
                 </CardContent>
               </Card>
-            )}
 
-            {/* Cycles Display */}
-            {program?.currentCycles !== undefined && (
-              <div className="flex-shrink-0 text-center py-2">
-                <p className="text-sm text-muted-foreground">Cycles: {program.currentCycles}</p>
+              {/* Cycles - 5% */}
+              <div className="h-[5%] flex items-center justify-center mt-2">
+                <p className="text-sm text-muted-foreground">Cycles: {program?.currentCycles || 0}</p>
               </div>
-            )}
-          </div>
-        </div>
+            </div>
 
-        {/* Back to Dashboard Button */}
-        <div className="flex justify-center mt-6">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate("/dashboard")}
-            className="px-8"
-          >
-            Back to Dashboard
-          </Button>
+            {/* Right Sub-Column */}
+            <div className="flex flex-col h-full">
+              {/* Architecture Selection - 5% */}
+              <Card className="h-[5%] mb-2 flex items-center">
+                <CardContent className="w-full p-3">
+                  <Select value={selectedArchitecture} onValueChange={setSelectedArchitecture}>
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue placeholder="Architecture" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ARCHITECTURE_GENERATIONS.map(arch => (
+                        <SelectItem key={arch} value={arch} className="text-xs">
+                          Architecture {arch}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
+
+              {/* Arguments Table - 90% */}
+              <Card className="flex-1 h-[90%] flex flex-col overflow-hidden">
+                <CardHeader className="pb-3 flex-shrink-0">
+                  <CardTitle className="text-sm">Arguments</CardTitle>
+                </CardHeader>
+                <CardContent className="flex-1 overflow-auto p-0">
+                  {programArgs && programArgs.length > 0 ? (
+                    <ScrollArea className="h-full">
+                      <div className="px-6 pb-6">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="text-xs">Argument Name</TableHead>
+                              <TableHead className="text-xs">Value</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {programArgs.map((arg, index) => (
+                              <TableRow key={index}>
+                                <TableCell className="font-mono text-xs">{arg.name}</TableCell>
+                                <TableCell>
+                                  <Input
+                                    type="text"
+                                    value={arg.value}
+                                    onChange={(e) => handleArgChange(index, e.target.value)}
+                                    placeholder="0"
+                                    className="h-7 text-xs"
+                                  />
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </ScrollArea>
+                  ) : (
+                    <p className="text-center text-muted-foreground text-xs py-4">No arguments required</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Back to Dashboard - 5% */}
+              <div className="h-[5%] flex items-center justify-center mt-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate("/dashboard")}
+                  className="w-full"
+                >
+                  Back to Dashboard
+                </Button>
+              </div>
+              
+              {/* Architecture Warning */}
+              {!isArchitectureCompatible() && (
+                <p className="text-xs text-destructive text-center mt-1">
+                  Requires Architecture {program?.minimalArchitectureNeededForRun}+
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
