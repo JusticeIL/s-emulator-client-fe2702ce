@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +30,7 @@ export default function Dashboard() {
   const [selectedFunction, setSelectedFunction] = useState(null);
   const [showVariablesPopup, setShowVariablesPopup] = useState(false);
   const [selectedRunVariables, setSelectedRunVariables] = useState(null);
+  const failureCount = useRef({ programs: 0, functions: 0, users: 0 });
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -49,6 +50,9 @@ export default function Dashboard() {
           fetchAllUsers()
         ]);
         
+        // Reset failure counts on success
+        failureCount.current = { programs: 0, functions: 0, users: 0 };
+        
         // Sort data
         const sortedPrograms = Array.isArray(programsData) 
           ? [...programsData].sort((a, b) => (a.programName || '').localeCompare(b.programName || ''))
@@ -64,6 +68,19 @@ export default function Dashboard() {
         setFunctions(sortedFunctions);
         setUsers(sortedUsers);
       } catch (error) {
+        // Increment failure count
+        failureCount.current.programs++;
+        failureCount.current.functions++;
+        failureCount.current.users++;
+        
+        // Check if we've failed 3 times consecutively
+        if (failureCount.current.programs >= 3 || 
+            failureCount.current.functions >= 3 || 
+            failureCount.current.users >= 3) {
+          navigate('/server-down');
+          return;
+        }
+        
         toast({
           title: "Error",
           description: "Failed to load data",
@@ -111,9 +128,9 @@ export default function Dashboard() {
     }
   };
 
-  const handleSelectUser = async (username) => {
+  const handleSelectUser = async (user) => {
     try {
-      const userData = await fetchUser(username);
+      const userData = await fetchUser(user.username);
       setSelectedUser(userData);
     } catch (error) {
       toast({
@@ -235,38 +252,40 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-[1800px] mx-auto space-y-6">
-        {/* Header with Credits in Top Right */}
+        {/* Header with Theme Toggle and Credits in Top Right */}
         <div className="flex justify-between items-start gap-6">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-4">
-              <h1 className="text-3xl font-bold">S-Emulator Dashboard</h1>
-              <ThemeToggle />
-            </div>
+            <h1 className="text-3xl font-bold">S-Emulator Dashboard</h1>
             <p className="text-muted-foreground mt-1">Welcome, {username}</p>
           </div>
           
-          {/* Compact Credit Management - Top Right (20-25% width) */}
-          <Card className="w-64 flex-shrink-0">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Credits</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-2">
-                <Input
-                  type="number"
-                  placeholder="Amount"
-                  value={creditAmount}
-                  onChange={(e) => setCreditAmount(e.target.value)}
-                  min="1"
-                  className="h-9"
-                />
-                <Button onClick={handleAddCredits} disabled={addingCredits} size="sm">
-                  {addingCredits && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Add
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Top Right - Theme Toggle and Credits */}
+          <div className="flex flex-col items-end gap-3">
+            <ThemeToggle />
+            
+            {/* Compact Credit Management */}
+            <Card className="w-64 flex-shrink-0">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Credits</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Amount"
+                    value={creditAmount}
+                    onChange={(e) => setCreditAmount(e.target.value)}
+                    min="1"
+                    className="h-9"
+                  />
+                  <Button onClick={handleAddCredits} disabled={addingCredits} size="sm">
+                    {addingCredits && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    Add
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* 2x2 Grid for Tables */}
@@ -279,7 +298,12 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="flex-1">
               <div className="mb-4">
-                <Button onClick={handleUnselectUser} variant="outline" size="sm">
+                <Button 
+                  onClick={handleUnselectUser} 
+                  variant="outline" 
+                  size="sm"
+                  disabled={!selectedUser}
+                >
                   Unselect User
                 </Button>
               </div>
@@ -302,8 +326,8 @@ export default function Dashboard() {
                       {users.map((user, index) => (
                         <TableRow 
                           key={index} 
-                          className="cursor-pointer hover:bg-muted"
-                          onClick={() => handleSelectUser(user.username)}
+                          className={`cursor-pointer ${selectedUser?.username === user.username ? 'bg-accent' : 'hover:bg-muted'}`}
+                          onClick={() => handleSelectUser(user)}
                         >
                           <TableCell className="font-medium">{user.username}</TableCell>
                           <TableCell>{user.programsLoaded || 0}</TableCell>
@@ -328,7 +352,12 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="flex-1">
               <div className="mb-4">
-                <Button onClick={handleExecuteProgram} variant="default" size="sm">
+                <Button 
+                  onClick={handleExecuteProgram} 
+                  variant="default" 
+                  size="sm"
+                  disabled={!selectedProgram}
+                >
                   Execute Program
                 </Button>
               </div>
@@ -442,7 +471,12 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent className="flex-1">
               <div className="mb-4">
-                <Button onClick={handleExecuteFunction} variant="default" size="sm">
+                <Button 
+                  onClick={handleExecuteFunction} 
+                  variant="default" 
+                  size="sm"
+                  disabled={!selectedFunction}
+                >
                   Execute Function
                 </Button>
               </div>
@@ -482,18 +516,33 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Variables Popup */}
+        {/* Variables Popup with Overlay */}
         {showVariablesPopup && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowVariablesPopup(false)}>
-            <Card className="w-96 max-h-[80vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
+          <>
+            <style>
+              {`body { overflow: hidden; }`}
+            </style>
+            <div 
+              className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 transition-opacity duration-300" 
+              onClick={() => setShowVariablesPopup(false)}
+              style={{ 
+                animation: 'fadeIn 0.2s ease-in-out'
+              }}
+            >
+            <Card 
+              className="w-96 max-h-[80vh] overflow-auto shadow-2xl" 
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                animation: 'slideIn 0.3s ease-out'
+              }}
+            >
               <CardHeader>
                 <CardTitle>Final State of Variables</CardTitle>
-                <CardDescription>Sorted: y, x variables, z variables</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   {selectedRunVariables && sortVariables(selectedRunVariables).map(([key, value]) => (
-                    <div key={key} className="flex justify-between items-center py-2 border-b">
+                    <div key={key} className="flex justify-between items-center py-2 border-b border-border">
                       <span className="font-medium">{key}</span>
                       <span className="text-muted-foreground">{value}</span>
                     </div>
@@ -507,6 +556,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </div>
+          </>
         )}
       </div>
     </div>

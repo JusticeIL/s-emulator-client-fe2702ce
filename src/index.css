@@ -192,4 +192,30 @@ All colors MUST be HSL.
   body {
     transition: background-color 0.3s ease, color 0.3s ease;
   }
+
+  /* Prevent scroll when modal is open */
+  body.modal-open {
+    overflow: hidden;
+  }
+
+  /* Popup animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
 }
