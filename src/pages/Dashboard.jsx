@@ -272,7 +272,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background p-6">
       <div className="w-full mx-auto">
         {/* Header with Theme Toggle and Credits in Top Right */}
-        <div className="flex justify-between items-start gap-6 max-w-[1800px] mx-auto mb-5">
+        <div className="flex justify-between items-start gap-6 max-w-[1800px] mx-auto mb-2.5">
           <div className="flex-1 min-w-0">
             <h1 className="text-3xl font-bold">S-Emulator Dashboard</h1>
             <p className="text-muted-foreground mt-1">Welcome, {username}</p>
@@ -309,10 +309,10 @@ export default function Dashboard() {
 
         {/* 2x2 Grid for Tables */}
         <div 
-          className="mx-auto p-2.5"
+          className="mx-auto"
           style={{ 
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
+            gridTemplateColumns: '45% 45%',
             gridTemplateRows: 'minmax(550px, 1fr) minmax(550px, 1fr)',
             gap: '10px',
             maxWidth: '1400px',
