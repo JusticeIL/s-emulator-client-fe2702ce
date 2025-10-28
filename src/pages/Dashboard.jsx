@@ -270,9 +270,9 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background p-6">
-      <div className="max-w-[1800px] mx-auto space-y-6">
+      <div className="max-w-[1800px] mx-auto space-y-5">
         {/* Header with Theme Toggle and Credits in Top Right */}
-        <div className="flex justify-between items-start gap-6">
+        <div className="flex justify-between items-start gap-6 mb-5">
           <div className="flex-1 min-w-0">
             <h1 className="text-3xl font-bold">S-Emulator Dashboard</h1>
             <p className="text-muted-foreground mt-1">Welcome, {username}</p>
@@ -308,9 +308,9 @@ export default function Dashboard() {
         </div>
 
         {/* 2x2 Grid for Tables */}
-        <div className="grid grid-cols-2 gap-4 mx-auto px-6" style={{ maxWidth: '1600px' }}>
+        <div className="grid grid-cols-2 gap-4 max-w-[1600px] mx-auto">
           {/* Top Left - Users */}
-          <Card className="flex flex-col border-2 h-[550px] max-w-[750px]">
+          <Card className="flex flex-col border-2 h-[550px] w-full">
             <CardHeader>
               <CardTitle>Users</CardTitle>
               <CardDescription>Click a user to view their statistics</CardDescription>
@@ -364,7 +364,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Top Right - Programs */}
-          <Card className="flex flex-col border-2 h-[550px] max-w-[750px]">
+          <Card className="flex flex-col border-2 h-[550px] w-full">
             <CardHeader>
               <CardTitle>Programs</CardTitle>
               <CardDescription>Available programs</CardDescription>
@@ -418,7 +418,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Left - User Statistics */}
-          <Card className="flex flex-col border-2 h-[550px] max-w-[750px]">
+          <Card className="flex flex-col border-2 h-[550px] w-full">
             <CardHeader>
               <CardTitle>User Statistics</CardTitle>
               <CardDescription>
@@ -483,7 +483,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Right - Functions */}
-          <Card className="flex flex-col border-2 h-[550px] max-w-[750px]">
+          <Card className="flex flex-col border-2 h-[550px] w-full">
             <CardHeader>
               <CardTitle>Functions</CardTitle>
               <CardDescription>Available functions</CardDescription>
