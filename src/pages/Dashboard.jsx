@@ -189,7 +189,8 @@ export default function Dashboard() {
   };
 
   const handleShowVariables = (run) => {
-    setSelectedRunVariables(run.finalStateOfAllVariables || {});
+    const variables = run?.finalStateOfAllVariables;
+    setSelectedRunVariables(variables && typeof variables === 'object' ? variables : null);
     setShowVariablesPopup(true);
   };
 
@@ -592,7 +593,7 @@ export default function Dashboard() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {selectedRunVariables && Object.keys(selectedRunVariables).length > 0 ? (
+                      {selectedRunVariables && typeof selectedRunVariables === 'object' && Object.keys(selectedRunVariables).length > 0 ? (
                         sortVariables(selectedRunVariables).map(([key, value]) => (
                           <TableRow key={key}>
                             <TableCell className="font-medium">{key}</TableCell>
