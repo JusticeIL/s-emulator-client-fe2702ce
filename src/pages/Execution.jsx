@@ -222,7 +222,7 @@ export default function Execution() {
   return (
     <div className="min-h-screen bg-background p-6">
       {/* Top Bar */}
-      <div className="max-w-[1800px] mx-auto mb-[50px]">
+      <div className="max-w-[1800px] mx-auto mb-12">
         <div className="relative flex items-start justify-between">
           {/* Left: Username */}
           <div className="flex-shrink-0">
@@ -259,7 +259,7 @@ export default function Execution() {
           {/* Left Column (45%) - Instructions Table */}
           <div className="flex flex-col h-full">
             {/* Expansion Level Selection */}
-            <div className="flex items-center justify-center gap-4 mb-[10px]">
+            <div className="flex items-center justify-center gap-4 mb-2.5">
               <Label className="text-sm">Expansion Level:</Label>
               <Select 
                 value={expansionLevel.toString()} 
@@ -530,7 +530,7 @@ export default function Execution() {
                                   value={arg.value}
                                   onChange={(e) => handleArgChange(index, e.target.value)}
                                   placeholder="0"
-                                  className="h-7 text-xs w-[25%]"
+                                  className="h-7 text-xs w-20"
                                   disabled={executing}
                                   min="0"
                                   step="1"
