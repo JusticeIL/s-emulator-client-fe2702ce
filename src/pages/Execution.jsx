@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
-import { fetchActiveProgram, executeProgram, getUsernameCookie, fetchUser, ARCHITECTURE_GENERATIONS, compareArchitectures } from "@/lib/api";
+import { fetchActiveProgram, executeProgram, getUsernameCookie, fetchUser, ARCHITECTURE_GENERATIONS, compareArchitectures, expandProgram } from "@/lib/api";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Loader2, Play, RotateCcw } from "lucide-react";
 
@@ -85,21 +85,9 @@ export default function Execution() {
   const handleExpansionLevelChange = async (level) => {
     try {
       setExpanding(true);
-      const response = await fetch(`/api/program/expand?level=${level}`, {
-        credentials: 'include',
-      });
-      
-      if (response.ok) {
-        const updatedProgram = await response.json();
-        setProgram(updatedProgram);
-        setExpansionLevel(level);
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to expand program",
-          variant: "destructive",
-        });
-      }
+      const updatedProgram = await expandProgram(level);
+      setProgram(updatedProgram);
+      setExpansionLevel(level);
     } catch (error) {
       toast({
         title: "Error",
@@ -281,8 +269,8 @@ export default function Execution() {
                                     {instruction.type || 'S'}
                                   </Badge>
                                 </TableCell>
-                                <TableCell className="text-xs">{instruction.label?.labelName || '-'}</TableCell>
-                                <TableCell className="font-mono text-xs">{instruction.instruction || '-'}</TableCell>
+                                 <TableCell className="text-xs">{instruction.label?.labelName || '-'}</TableCell>
+                                 <TableCell className="font-mono text-xs">{instruction.instruction || '-'}</TableCell>
                                 <TableCell className="text-xs">{instruction.cycles || '0'}</TableCell>
                                 <TableCell className="text-xs">{instruction.ArchitectureGeneration || 'IV'}</TableCell>
                               </TableRow>
@@ -301,13 +289,10 @@ export default function Execution() {
               {program?.programInstructions && program.programInstructions.length > 0 && (
                 <>
                   <p className="text-xs text-muted-foreground text-center">
-                    {program.programInstructions.filter(i => i.type === 'B').length} Basic Instructions, {program.programInstructions.filter(i => i.type === 'S').length} Synthetic Instructions
+                    Program contains {program.programInstructions.filter(i => i.type === 'B').length} Basic Instructions, {program.programInstructions.filter(i => i.type === 'S').length} Synthetic Instructions,
                   </p>
                   <p className="text-xs text-muted-foreground text-center">
-                    Architecture IV: {program.programInstructions.filter(i => i.ArchitectureGeneration === 'IV').length}, 
-                    III: {program.programInstructions.filter(i => i.ArchitectureGeneration === 'III').length}, 
-                    II: {program.programInstructions.filter(i => i.ArchitectureGeneration === 'II').length}, 
-                    I: {program.programInstructions.filter(i => i.ArchitectureGeneration === 'I').length}
+                    {program.programInstructions.filter(i => i.ArchitectureGeneration === 'IV').length} Instructions in Architecture IV, {program.programInstructions.filter(i => i.ArchitectureGeneration === 'III').length} Instructions in Architecture III, {program.programInstructions.filter(i => i.ArchitectureGeneration === 'II').length} Instructions in Architecture II and {program.programInstructions.filter(i => i.ArchitectureGeneration === 'I').length} Instructions in Architecture I.
                   </p>
                 </>
               )}
@@ -370,12 +355,36 @@ export default function Execution() {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {program.programVariablesCurrentState.map((variable, idx) => (
-                              <TableRow key={idx}>
-                                <TableCell className="font-mono text-xs">{variable.variableName}</TableCell>
-                                <TableCell className="font-mono text-xs">{variable.variableValue}</TableCell>
-                              </TableRow>
-                            ))}
+                            {[...program.programVariablesCurrentState]
+                              .sort((a, b) => {
+                                const aName = a.variableName;
+                                const bName = b.variableName;
+                                
+                                // Sort order: y, then x1, x2, ..., then z1, z2, ...
+                                if (aName === 'y') return -1;
+                                if (bName === 'y') return 1;
+                                
+                                const aIsX = aName.startsWith('x');
+                                const bIsX = bName.startsWith('x');
+                                const aIsZ = aName.startsWith('z');
+                                const bIsZ = bName.startsWith('z');
+                                
+                                if (aIsX && !bIsX) return -1;
+                                if (!aIsX && bIsX) return 1;
+                                if (aIsZ && !bIsZ) return 1;
+                                if (!aIsZ && bIsZ) return -1;
+                                
+                                // Both same type, sort numerically
+                                const aNum = parseInt(aName.slice(1)) || 0;
+                                const bNum = parseInt(bName.slice(1)) || 0;
+                                return aNum - bNum;
+                              })
+                              .map((variable, idx) => (
+                                <TableRow key={idx}>
+                                  <TableCell className="font-mono text-xs">{variable.variableName}</TableCell>
+                                  <TableCell className="font-mono text-xs">{variable.variableValue}</TableCell>
+                                </TableRow>
+                              ))}
                           </TableBody>
                         </Table>
                       </div>
