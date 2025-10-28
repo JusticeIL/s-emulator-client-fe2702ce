@@ -214,25 +214,33 @@ export default function Execution() {
   return (
     <div className="min-h-screen bg-background p-6">
       {/* Top Bar */}
-      <div className="flex justify-between items-start gap-6 max-w-[1800px] mx-auto mb-[75px]">
-        {/* Left: Username */}
-        <div className="flex-1 min-w-0">
-          <p className="text-foreground">{username}</p>
-        </div>
-        
-        {/* Center: Title and Program Name */}
-        <div className="flex-1 text-center">
-          <h1 className="text-3xl font-bold">S-emulator Execution</h1>
-          <p className="text-muted-foreground mt-1">{program?.programName || "Program Name"}</p>
-        </div>
-        
-        {/* Right: Available Credits and Theme Toggle */}
-        <div className="flex items-center gap-5 flex-1">
-          <div className="text-sm ml-auto">
-            <span className="text-muted-foreground">Available Credits: </span>
-            <span className="font-semibold text-primary">{currentUserCredits}</span>
+      <div className="max-w-[1800px] mx-auto mb-[50px]">
+        <div 
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '45% 20% 20%',
+            gap: '7.5%',
+          }}
+        >
+          {/* Left: Username */}
+          <div>
+            <p className="text-foreground">{username}</p>
           </div>
-          <ThemeToggle />
+          
+          {/* Middle: Title and Program Name */}
+          <div className="text-center col-span-1">
+            <h1 className="text-3xl font-bold">S-emulator Execution</h1>
+            <p className="text-muted-foreground mt-1">{program?.programName || "Program Name"}</p>
+          </div>
+          
+          {/* Right: Available Credits and Theme Toggle */}
+          <div className="flex items-center justify-between">
+            <div className="text-sm">
+              <span className="text-muted-foreground">Available Credits: </span>
+              <span className="font-semibold text-primary">{currentUserCredits}</span>
+            </div>
+            <ThemeToggle />
+          </div>
         </div>
       </div>
 
@@ -272,7 +280,7 @@ export default function Execution() {
             </div>
 
             {/* Instructions Table */}
-            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '680px', height: '680px' }}>
+            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '700px', height: '700px' }}>
               <CardContent className="flex-1 flex flex-col min-h-0 p-0">
                 {!program?.programInstructions || program.programInstructions.length === 0 ? (
                   <p className="text-center text-muted-foreground py-8">No instructions available</p>
@@ -372,7 +380,7 @@ export default function Execution() {
                 style={{ 
                   backgroundColor: executing ? '#d97706' : (!isArchitectureCompatible() ? '#3a5a35' : '#72aa6c'),
                   color: 'white',
-                  border: executing ? '1px solid white' : '1px solid #72aa6c'
+                  border: executing ? 'none' : '2px solid #72aa6c'
                 }}
                 onMouseEnter={(e) => {
                   if (!executing && isArchitectureCompatible()) {
@@ -385,7 +393,7 @@ export default function Execution() {
                   if (!executing && isArchitectureCompatible()) {
                     e.currentTarget.style.backgroundColor = '#72aa6c';
                     e.currentTarget.style.color = 'white';
-                    e.currentTarget.style.border = '1px solid #72aa6c';
+                    e.currentTarget.style.border = '2px solid #72aa6c';
                   }
                 }}
               >
@@ -404,7 +412,7 @@ export default function Execution() {
             </div>
 
             {/* Variables Table */}
-            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '680px', height: '680px' }}>
+            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '700px', height: '700px' }}>
               <CardHeader className="pb-3 flex-shrink-0">
                 <CardTitle className="text-sm">Variables</CardTitle>
               </CardHeader>
@@ -495,7 +503,7 @@ export default function Execution() {
             </Card>
 
             {/* Arguments Table */}
-            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '680px', height: '680px' }}>
+            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '700px', height: '700px' }}>
               <CardHeader className="pb-3 flex-shrink-0">
                 <CardTitle className="text-sm">Arguments</CardTitle>
               </CardHeader>
@@ -556,9 +564,9 @@ export default function Execution() {
 
       {/* Slow Request Warning */}
       {showSlowWarning && (
-        <div className="fixed bottom-4 right-4 bg-orange-500 text-white px-6 py-4 rounded shadow-lg max-w-md border-2 border-orange-600">
+        <div className="fixed bottom-4 right-4 bg-orange-500 text-white px-6 py-4 rounded-lg shadow-lg max-w-md border-2 border-orange-600">
           <p className="text-sm font-semibold">Request is taking longer than expected...</p>
-          <p className="text-xs mt-1">Please wait while we process your program execution.</p>
+          <p className="text-xs mt-1">Please wait while we process your program execution</p>
         </div>
       )}
     </div>
