@@ -222,7 +222,7 @@ export default function Execution() {
   return (
     <div className="min-h-screen bg-background p-6">
       {/* Top Bar */}
-      <div className="max-w-[1800px] mx-auto mb-[50px]">
+      <div className="max-w-[1800px] mx-auto" style={{ marginBottom: '50px' }}>
         <div className="relative flex items-start justify-between">
           {/* Left: Username */}
           <div className="flex-shrink-0">
@@ -259,7 +259,7 @@ export default function Execution() {
           {/* Left Column (45%) - Instructions Table */}
           <div className="flex flex-col h-full">
             {/* Expansion Level Selection */}
-            <div className="flex items-center justify-center gap-4 mb-[10px]">
+            <div className="flex items-center justify-center gap-4" style={{ marginBottom: '10px' }}>
               <Label className="text-sm">Expansion Level:</Label>
               <Select 
                 value={expansionLevel.toString()} 
@@ -479,7 +479,7 @@ export default function Execution() {
           {/* Right Column (20%) - Architecture, Arguments, Back Button */}
           <div className="flex flex-col h-full gap-4">
             {/* Architecture Selection */}
-            <Card className="flex items-center mt-[10px]">
+            <Card className="flex items-center" style={{ marginTop: '10px' }}>
               <CardContent className="w-full p-3">
                 <div className="flex items-center gap-2">
                   <Label className="text-sm whitespace-nowrap">Architecture:</Label>
@@ -530,7 +530,7 @@ export default function Execution() {
                                   value={arg.value}
                                   onChange={(e) => handleArgChange(index, e.target.value)}
                                   placeholder="0"
-                                  className="h-7 text-xs w-20"
+                                  className="h-7 text-xs w-10"
                                   disabled={executing}
                                   min="0"
                                   step="1"

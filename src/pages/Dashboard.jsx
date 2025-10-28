@@ -641,20 +641,46 @@ export default function Dashboard() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {selectedRunVariables && typeof selectedRunVariables === 'object' && Object.keys(selectedRunVariables).length > 0 ? (
-                        sortVariables(selectedRunVariables).map(([key, value]) => (
-                          <TableRow key={key}>
-                            <TableCell className="font-medium">{key}</TableCell>
-                            <TableCell className="text-muted-foreground">{value}</TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={2} className="text-center text-muted-foreground">
-                            No variables available
-                          </TableCell>
-                        </TableRow>
-                      )}
+                      {(() => {
+                        try {
+                          if (!selectedRunVariables || typeof selectedRunVariables !== 'object' || Object.keys(selectedRunVariables).length === 0) {
+                            return (
+                              <TableRow>
+                                <TableCell colSpan={2} className="text-center text-muted-foreground">
+                                  No variables available
+                                </TableCell>
+                              </TableRow>
+                            );
+                          }
+                          
+                          const sortedVars = sortVariables(selectedRunVariables);
+                          if (!Array.isArray(sortedVars) || sortedVars.length === 0) {
+                            return (
+                              <TableRow>
+                                <TableCell colSpan={2} className="text-center text-muted-foreground">
+                                  No variables available
+                                </TableCell>
+                              </TableRow>
+                            );
+                          }
+                          
+                          return sortedVars.map(([key, value]) => (
+                            <TableRow key={key}>
+                              <TableCell className="font-medium">{String(key)}</TableCell>
+                              <TableCell className="text-muted-foreground">{String(value)}</TableCell>
+                            </TableRow>
+                          ));
+                        } catch (error) {
+                          console.error('Error rendering variables:', error);
+                          return (
+                            <TableRow>
+                              <TableCell colSpan={2} className="text-center text-destructive">
+                                Error displaying variables
+                              </TableCell>
+                            </TableRow>
+                          );
+                        }
+                      })()}
                     </TableBody>
                   </Table>
                 </ScrollArea>
