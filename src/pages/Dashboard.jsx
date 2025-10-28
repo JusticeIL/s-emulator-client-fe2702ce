@@ -575,22 +575,33 @@ export default function Dashboard() {
               style={{ backgroundColor: 'rgba(0, 0, 0, 0.85)' }}
             >
             <Card 
-              className="w-96 max-h-[80vh] overflow-auto shadow-2xl animate-scale-in" 
+              className="w-[600px] max-w-[90vw] shadow-2xl animate-scale-in flex flex-col" 
               onClick={(e) => e.stopPropagation()}
+              style={{ maxHeight: '80vh' }}
             >
-              <CardHeader>
+              <CardHeader className="flex-shrink-0">
                 <CardTitle>Final State of Variables</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {selectedRunVariables && sortVariables(selectedRunVariables).map(([key, value]) => (
-                    <div key={key} className="flex justify-between items-center py-2 border-b border-border">
-                      <span className="font-medium">{key}</span>
-                      <span className="text-muted-foreground">{value}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4">
+              <CardContent className="flex-1 overflow-hidden">
+                <ScrollArea className="h-full max-h-[60vh]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Variable</TableHead>
+                        <TableHead>Value</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {selectedRunVariables && sortVariables(selectedRunVariables).map(([key, value]) => (
+                        <TableRow key={key}>
+                          <TableCell className="font-medium">{key}</TableCell>
+                          <TableCell className="text-muted-foreground">{value}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
+                <div className="mt-4 flex-shrink-0">
                   <Button onClick={() => setShowVariablesPopup(false)} className="w-full">
                     Close
                   </Button>

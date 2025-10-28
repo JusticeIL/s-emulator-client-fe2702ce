@@ -148,6 +148,13 @@ export default function Execution() {
       // Show warning after 30 seconds
       const warningTimeout = setTimeout(() => {
         setShowSlowWarning(true);
+        toast({
+          title: "Request is taking longer than expected...",
+          description: "Please wait while we process your program execution",
+          variant: "default",
+          duration: Infinity,
+          className: "bg-orange-500 text-white border-orange-600",
+        });
       }, 30000);
       
       // Build arguments as array of VariableDTO objects
@@ -214,7 +221,7 @@ export default function Execution() {
   return (
     <div className="min-h-screen bg-background p-6">
       {/* Top Bar */}
-      <div className="max-w-[1800px] mx-auto mb-[75px]">
+      <div className="max-w-[1800px] mx-auto mb-[50px]">
         <div className="relative flex items-start justify-between">
           {/* Left: Username */}
           <div className="flex-shrink-0">
@@ -556,13 +563,7 @@ export default function Execution() {
         </div>
       </div>
 
-      {/* Slow Request Warning */}
-      {showSlowWarning && (
-        <div className="fixed bottom-4 right-4 bg-orange-500 text-white px-6 py-4 rounded-lg shadow-lg max-w-md border-2 border-orange-600">
-          <p className="text-sm font-semibold">Request is taking longer than expected...</p>
-          <p className="text-xs mt-1">Please wait while we process your program execution</p>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
