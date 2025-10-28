@@ -124,16 +124,31 @@ export default function Execution() {
         });
         return;
       }
+
+      // Validate arguments are non-negative integers
+      const invalidArgs = programArgs.filter(arg => {
+        const num = parseInt(arg.value, 10);
+        return isNaN(num) || num < 0 || !Number.isInteger(parseFloat(arg.value));
+      });
+
+      if (invalidArgs.length > 0) {
+        toast({
+          title: "Invalid Arguments",
+          description: `Arguments must be non-negative integers: ${invalidArgs.map(a => a.name).join(', ')}`,
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     try {
       setExecuting(true);
       setShowSlowWarning(false);
       
-      // Show warning after 5 seconds
+      // Show warning after 30 seconds
       const warningTimeout = setTimeout(() => {
         setShowSlowWarning(true);
-      }, 5000);
+      }, 30000);
       
       // Build arguments as array of VariableDTO objects
       const argumentsSet = programArgs.map(arg => ({
@@ -199,7 +214,7 @@ export default function Execution() {
   return (
     <div className="min-h-screen bg-background p-6">
       {/* Top Bar */}
-      <div className="flex justify-between items-start gap-6 max-w-[1800px] mx-auto mb-8">
+      <div className="flex justify-between items-start gap-6 max-w-[1800px] mx-auto mb-12">
         {/* Left: Username */}
         <div className="flex-1 min-w-0">
           <p className="text-foreground">{username}</p>
@@ -211,9 +226,13 @@ export default function Execution() {
           <p className="text-muted-foreground mt-1">{program?.programName || "Program Name"}</p>
         </div>
         
-        {/* Right: Theme Toggle - aligned to right */}
+        {/* Right: Available Credits and Theme Toggle - aligned to right */}
         <div className="flex items-center gap-5 flex-1">
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-5">
+            <div className="text-sm">
+              <span className="text-muted-foreground">Available Credits: </span>
+              <span className="font-semibold text-primary">{currentUserCredits}</span>
+            </div>
             <ThemeToggle />
           </div>
         </div>
@@ -232,7 +251,7 @@ export default function Execution() {
           {/* Left Column (45%) - Instructions Table */}
           <div className="flex flex-col h-full">
             {/* Expansion Level Selection */}
-            <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="flex items-center justify-center gap-4 mb-6">
               <Label className="text-sm">Expansion Level:</Label>
               <Select 
                 value={expansionLevel.toString()} 
@@ -255,7 +274,7 @@ export default function Execution() {
             </div>
 
             {/* Instructions Table */}
-            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '700px' }}>
+            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '650px' }}>
               <CardContent className="flex-1 flex flex-col min-h-0 p-0">
                 {!program?.programInstructions || program.programInstructions.length === 0 ? (
                   <p className="text-center text-muted-foreground py-8">No instructions available</p>
@@ -280,23 +299,22 @@ export default function Execution() {
                               selectedArchitecture && 
                               compareArchitectures(selectedArchitecture, instruction.ArchitectureGeneration) < 0;
                             
+                            const textColorClass = isIncompatibleWithSelected ? 'text-red-500' : '';
+                            
                             return (
-                              <TableRow
-                                key={index}
-                                className={isIncompatibleWithSelected ? 'text-red-500' : ''}
-                              >
-                                <TableCell className="font-mono text-xs">{index + 1}</TableCell>
+                              <TableRow key={index}>
+                                <TableCell className={`font-mono text-xs ${textColorClass}`}>{index + 1}</TableCell>
                                 <TableCell>
-                                  <Badge variant="outline" className="text-xs">
+                                  <Badge variant="outline" className={`text-xs ${textColorClass}`}>
                                     {instruction.type || 'S'}
                                   </Badge>
                                 </TableCell>
-                                <TableCell className="text-xs">{instruction.label.name}</TableCell>
-                                <TableCell className="font-mono text-xs">
+                                <TableCell className={`text-xs ${textColorClass}`}>{instruction.label.name}</TableCell>
+                                <TableCell className={`font-mono text-xs ${textColorClass}`}>
                                   {instruction.instruction}
                                 </TableCell>
-                                <TableCell className="text-xs">{instruction.cycles || '0'}</TableCell>
-                                <TableCell className="text-xs">{instruction.ArchitectureGeneration || 'IV'}</TableCell>
+                                <TableCell className={`text-xs ${textColorClass}`}>{instruction.cycles || '0'}</TableCell>
+                                <TableCell className={`text-xs ${textColorClass}`}>{instruction.ArchitectureGeneration || 'IV'}</TableCell>
                               </TableRow>
                             );
                           })}
@@ -331,8 +349,14 @@ export default function Execution() {
                 variant="outline" 
                 size="sm"
                 onClick={() => {
+                  // Reset arguments
                   if (program?.programXArguments && Array.isArray(program.programXArguments)) {
                     setProgramArgs(program.programXArguments.map(arg => ({ name: arg, value: '' })));
+                  }
+                  // Reset variables to 0
+                  if (program?.programVariablesCurrentState && Array.isArray(program.programVariablesCurrentState)) {
+                    const resetVariables = program.programVariablesCurrentState.map(v => ({ ...v, value: '0' }));
+                    setProgram(prev => ({ ...prev, programVariablesCurrentState: resetVariables, currentCycles: 0 }));
                   }
                 }}
                 disabled={executing}
@@ -347,14 +371,14 @@ export default function Execution() {
                 disabled={executing || !isArchitectureCompatible()}
                 className="flex-1 transition-all hover:bg-transparent hover:text-[#72aa6c] hover:border-[#72aa6c] hover:border-2 disabled:opacity-100"
                 style={{ 
-                  backgroundColor: executing || !isArchitectureCompatible() ? '#4a7a45' : '#72aa6c', 
+                  backgroundColor: executing ? '#d97706' : (!isArchitectureCompatible() ? '#4a7a45' : '#72aa6c'),
                   color: 'white' 
                 }}
               >
                 {executing ? (
                   <>
-                    <Loader2 className="mr-1 h-3 w-3 animate-spin text-yellow-500" />
-                    <span className="text-yellow-500">Running...</span>
+                    <Loader2 className="mr-1 h-3 w-3 animate-spin text-yellow-300" />
+                    <span className="text-yellow-300">Running...</span>
                   </>
                 ) : (
                   <>
@@ -366,7 +390,7 @@ export default function Execution() {
             </div>
 
             {/* Variables Table */}
-            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '700px' }}>
+            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '650px' }}>
               <CardHeader className="pb-3 flex-shrink-0">
                 <CardTitle className="text-sm">Variables</CardTitle>
               </CardHeader>
@@ -430,12 +454,6 @@ export default function Execution() {
 
           {/* Right Column (20%) - Architecture, Arguments, Back Button */}
           <div className="flex flex-col h-full gap-4">
-            {/* Available Credits */}
-            <div className="text-sm">
-              <span className="text-muted-foreground">Available Credits: </span>
-              <span className="font-semibold text-primary">{currentUserCredits}</span>
-            </div>
-
             {/* Architecture Selection */}
             <Card className="flex items-center">
               <CardContent className="w-full p-3">
@@ -463,7 +481,7 @@ export default function Execution() {
             </Card>
 
             {/* Arguments Table */}
-            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '700px' }}>
+            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '650px' }}>
               <CardHeader className="pb-3 flex-shrink-0">
                 <CardTitle className="text-sm">Arguments</CardTitle>
               </CardHeader>
@@ -484,12 +502,14 @@ export default function Execution() {
                               <TableCell className="font-mono text-xs">{arg.name}</TableCell>
                               <TableCell>
                                 <Input
-                                  type="text"
+                                  type="number"
                                   value={arg.value}
                                   onChange={(e) => handleArgChange(index, e.target.value)}
                                   placeholder="0"
                                   className="h-7 text-xs"
                                   disabled={executing}
+                                  min="0"
+                                  step="1"
                                 />
                               </TableCell>
                             </TableRow>
