@@ -188,17 +188,6 @@ All colors MUST be HSL.
     }
   }
 
-  /* Force red background for incompatible instruction rows */
-  tr.row-incompatible-architecture,
-  tr.row-incompatible-architecture:hover {
-    background-color: #ef4444 !important;
-  }
-
-  .dark tr.row-incompatible-architecture,
-  .dark tr.row-incompatible-architecture:hover {
-    background-color: rgba(127, 29, 29, 0.5) !important;
-  }
-
   /* Smooth theme transitions */
   body {
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -229,4 +218,21 @@ All colors MUST be HSL.
       opacity: 1;
     }
   }
+}
+
+/* Force red background for incompatible instruction rows - OUTSIDE LAYER FOR MAXIMUM PRIORITY */
+tbody tr.row-incompatible-architecture,
+tbody tr.row-incompatible-architecture:hover,
+tbody tr.row-incompatible-architecture:focus,
+tbody tr.row-incompatible-architecture[data-state=selected] {
+  background-color: #ef4444 !important;
+  background: #ef4444 !important;
+}
+
+.dark tbody tr.row-incompatible-architecture,
+.dark tbody tr.row-incompatible-architecture:hover,
+.dark tbody tr.row-incompatible-architecture:focus,
+.dark tbody tr.row-incompatible-architecture[data-state=selected] {
+  background-color: rgba(127, 29, 29, 0.5) !important;
+  background: rgba(127, 29, 29, 0.5) !important;
 }
