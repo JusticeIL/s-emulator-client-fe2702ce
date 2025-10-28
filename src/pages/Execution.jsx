@@ -562,8 +562,6 @@ export default function Execution() {
           </div>
         </div>
       </div>
-
-      </div>
     </div>
   );
 }
