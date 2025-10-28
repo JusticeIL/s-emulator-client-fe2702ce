@@ -266,7 +266,7 @@ export default function Dashboard() {
           </div>
           
           {/* Top Right - Theme Toggle and Credits */}
-          <div className="flex flex-col items-end gap-2.5">
+          <div className="flex flex-col items-end gap-3">
             <ThemeToggle />
             
             {/* Compact Credit Management */}
@@ -295,7 +295,7 @@ export default function Dashboard() {
         </div>
 
         {/* 2x2 Grid for Tables */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5 max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 gap-2.5 max-w-7xl mx-auto">
           {/* Top Left - Users */}
           <Card className="flex flex-col border-2 h-[500px]">
             <CardHeader>
