@@ -24,6 +24,7 @@ export default function Dashboard() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
+  const [currentUserCredits, setCurrentUserCredits] = useState(0);
   const [creditAmount, setCreditAmount] = useState("");
   const [addingCredits, setAddingCredits] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState(null);
@@ -54,6 +55,17 @@ export default function Dashboard() {
       return;
     }
     setUsername(user);
+
+    const loadCurrentUserCredits = async () => {
+      try {
+        const userData = await fetchUser(user);
+        setCurrentUserCredits(userData.credits || 0);
+      } catch (error) {
+        console.error('Failed to fetch current user credits:', error);
+      }
+    };
+
+    loadCurrentUserCredits();
 
     const loadData = async () => {
       try {
@@ -125,6 +137,9 @@ export default function Dashboard() {
     setAddingCredits(true);
     try {
       await addCredits(amount);
+      // Refresh current user credits after successful addition
+      const userData = await fetchUser(username);
+      setCurrentUserCredits(userData.credits || 0);
       toast({
         title: "Success",
         description: `Added ${amount} credits successfully`,
@@ -288,6 +303,10 @@ export default function Dashboard() {
                 <CardTitle className="text-lg">Credits</CardTitle>
               </CardHeader>
               <CardContent>
+                <div className="mb-3">
+                  <span className="text-sm text-muted-foreground">Available Credit: </span>
+                  <span className="text-sm font-semibold text-primary">{currentUserCredits}</span>
+                </div>
                 <div className="flex gap-2">
                   <Input
                     type="number"
