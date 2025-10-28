@@ -4,12 +4,9 @@ export default function ServerDown() {
       <div className="max-w-2xl w-full text-center space-y-8">
         <div className="space-y-4">
           <img 
-            src="https://cdn.dribbble.com/users/77121/screenshots/2083086/media/783a488888c7672b6a6512d070f41da2.gif"
+            src="/caveman-404.gif"
             alt="Caveman 404"
             className="mx-auto max-w-md w-full rounded-lg"
-            onError={(e) => {
-              e.target.style.display = 'none';
-            }}
           />
           <h1 className="text-4xl font-bold text-foreground">Oops!</h1>
           <p className="text-xl text-muted-foreground">

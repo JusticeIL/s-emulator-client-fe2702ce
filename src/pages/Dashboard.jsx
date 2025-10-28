@@ -294,7 +294,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* 2x2 Grid for Tables */}
+        {/* 2x2 Grid for Tables - Always 2 columns */}
         <div className="grid grid-cols-2 gap-2.5 max-w-7xl mx-auto">
           {/* Top Left - Users */}
           <Card className="flex flex-col border-2 h-[500px]">
@@ -529,18 +529,12 @@ export default function Dashboard() {
               {`body { overflow: hidden; }`}
             </style>
             <div 
-              className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 transition-opacity duration-300" 
+              className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 animate-fade-in" 
               onClick={() => setShowVariablesPopup(false)}
-              style={{ 
-                animation: 'fadeIn 0.2s ease-in-out'
-              }}
             >
             <Card 
-              className="w-96 max-h-[80vh] overflow-auto shadow-2xl" 
+              className="w-96 max-h-[80vh] overflow-auto shadow-2xl animate-scale-in" 
               onClick={(e) => e.stopPropagation()}
-              style={{
-                animation: 'slideIn 0.3s ease-out'
-              }}
             >
               <CardHeader>
                 <CardTitle>Final State of Variables</CardTitle>
