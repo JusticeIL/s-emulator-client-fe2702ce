@@ -214,7 +214,7 @@ export default function Execution() {
   return (
     <div className="min-h-screen bg-background p-6">
       {/* Top Bar */}
-      <div className="max-w-[1800px] mx-auto mb-[50px]">
+      <div className="max-w-[1800px] mx-auto mb-[75px]">
         <div 
           style={{
             display: 'grid',
@@ -257,7 +257,7 @@ export default function Execution() {
           {/* Left Column (45%) - Instructions Table */}
           <div className="flex flex-col h-full">
             {/* Expansion Level Selection */}
-            <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="flex items-center justify-center gap-4 mb-[10px]">
               <Label className="text-sm">Expansion Level:</Label>
               <Select 
                 value={expansionLevel.toString()} 
@@ -280,7 +280,7 @@ export default function Execution() {
             </div>
 
             {/* Instructions Table */}
-            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '700px', height: '700px' }}>
+            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '680px', height: '680px' }}>
               <CardContent className="flex-1 flex flex-col min-h-0 p-0">
                 {!program?.programInstructions || program.programInstructions.length === 0 ? (
                   <p className="text-center text-muted-foreground py-8">No instructions available</p>
@@ -380,7 +380,7 @@ export default function Execution() {
                 style={{ 
                   backgroundColor: executing ? '#d97706' : (!isArchitectureCompatible() ? '#3a5a35' : '#72aa6c'),
                   color: 'white',
-                  border: executing ? 'none' : '2px solid #72aa6c'
+                  border: executing ? 'none' : (!isArchitectureCompatible() ? '2px solid #3a5a35' : '2px solid #72aa6c')
                 }}
                 onMouseEnter={(e) => {
                   if (!executing && isArchitectureCompatible()) {
@@ -412,7 +412,7 @@ export default function Execution() {
             </div>
 
             {/* Variables Table */}
-            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '700px', height: '700px' }}>
+            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '680px', height: '680px' }}>
               <CardHeader className="pb-3 flex-shrink-0">
                 <CardTitle className="text-sm">Variables</CardTitle>
               </CardHeader>
@@ -503,7 +503,7 @@ export default function Execution() {
             </Card>
 
             {/* Arguments Table */}
-            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '700px', height: '700px' }}>
+            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '680px', height: '680px' }}>
               <CardHeader className="pb-3 flex-shrink-0">
                 <CardTitle className="text-sm">Arguments</CardTitle>
               </CardHeader>
@@ -564,7 +564,7 @@ export default function Execution() {
 
       {/* Slow Request Warning */}
       {showSlowWarning && (
-        <div className="fixed bottom-4 right-4 bg-orange-500 text-white px-6 py-4 rounded-lg shadow-lg max-w-md border-2 border-orange-600">
+        <div className="fixed bottom-4 right-4 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg max-w-md border-2 border-red-600">
           <p className="text-sm font-semibold">Request is taking longer than expected...</p>
           <p className="text-xs mt-1">Please wait while we process your program execution</p>
         </div>
