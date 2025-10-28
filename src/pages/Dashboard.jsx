@@ -316,7 +316,7 @@ export default function Dashboard() {
             gridTemplateRows: 'minmax(550px, 1fr) minmax(550px, 1fr)',
             gap: '10px',
             maxWidth: '1800px',
-            width: '95%',
+            marginTop: '20px',
             justifyContent: 'center',
             alignItems: 'stretch'
           }}
