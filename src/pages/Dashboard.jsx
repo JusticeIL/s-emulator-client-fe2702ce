@@ -312,16 +312,17 @@ export default function Dashboard() {
           className="mx-auto"
           style={{ 
             display: 'grid',
-            gridTemplateColumns: '45% 45%',
+            gridTemplateColumns: '1fr 1fr',
             gridTemplateRows: 'minmax(550px, 1fr) minmax(550px, 1fr)',
             gap: '10px',
-            maxWidth: '1400px',
+            maxWidth: '1800px',
+            width: '95%',
             justifyContent: 'center',
             alignItems: 'stretch'
           }}
         >
           {/* Top Left - Users */}
-          <Card className="flex flex-col border-2 h-full" style={{ maxWidth: '680px', width: '100%' }}>
+          <Card className="flex flex-col border-2 h-full w-full">
             <CardHeader>
               <CardTitle>Users</CardTitle>
               <CardDescription>Click a user to view their statistics</CardDescription>
@@ -375,7 +376,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Top Right - Programs */}
-          <Card className="flex flex-col border-2 h-full" style={{ maxWidth: '680px', width: '100%' }}>
+          <Card className="flex flex-col border-2 h-full w-full">
             <CardHeader>
               <CardTitle>Programs</CardTitle>
               <CardDescription>Available programs</CardDescription>
@@ -429,7 +430,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Left - User Statistics */}
-          <Card className="flex flex-col border-2 h-full" style={{ maxWidth: '680px', width: '100%' }}>
+          <Card className="flex flex-col border-2 h-full w-full">
             <CardHeader>
               <CardTitle>User Statistics</CardTitle>
               <CardDescription>
@@ -494,7 +495,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Right - Functions */}
-          <Card className="flex flex-col border-2 h-full" style={{ maxWidth: '680px', width: '100%' }}>
+          <Card className="flex flex-col border-2 h-full w-full">
             <CardHeader>
               <CardTitle>Functions</CardTitle>
               <CardDescription>Available functions</CardDescription>
