@@ -129,6 +129,12 @@ export default function Dashboard() {
   };
 
   const handleSelectUser = async (user) => {
+    // Toggle selection if clicking the same user
+    if (selectedUser?.username === user.username) {
+      setSelectedUser(null);
+      return;
+    }
+    
     try {
       const userData = await fetchUser(user.username);
       setSelectedUser(userData);
@@ -260,7 +266,7 @@ export default function Dashboard() {
           </div>
           
           {/* Top Right - Theme Toggle and Credits */}
-          <div className="flex flex-col items-end gap-3">
+          <div className="flex flex-col items-end gap-2.5">
             <ThemeToggle />
             
             {/* Compact Credit Management */}
@@ -289,9 +295,9 @@ export default function Dashboard() {
         </div>
 
         {/* 2x2 Grid for Tables */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5 max-w-7xl mx-auto">
           {/* Top Left - Users */}
-          <Card className="flex flex-col">
+          <Card className="flex flex-col border-2 h-[500px]">
             <CardHeader>
               <CardTitle>Users</CardTitle>
               <CardDescription>Click a user to view their statistics</CardDescription>
@@ -345,7 +351,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Top Right - Programs */}
-          <Card className="flex flex-col">
+          <Card className="flex flex-col border-2 h-[500px]">
             <CardHeader>
               <CardTitle>Programs</CardTitle>
               <CardDescription>Available programs</CardDescription>
@@ -381,7 +387,7 @@ export default function Dashboard() {
                         <TableRow 
                           key={index}
                           className={`cursor-pointer ${selectedProgram?.programName === program.programName ? 'bg-accent' : 'hover:bg-muted'}`}
-                          onClick={() => setSelectedProgram(program)}
+                          onClick={() => setSelectedProgram(selectedProgram?.programName === program.programName ? null : program)}
                         >
                           <TableCell className="font-medium">{program.programName || 'Unknown'}</TableCell>
                           <TableCell>{program.uploadingUser || 'N/A'}</TableCell>
@@ -399,7 +405,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Left - User Statistics */}
-          <Card className="flex flex-col">
+          <Card className="flex flex-col border-2 h-[500px]">
             <CardHeader>
               <CardTitle>User Statistics</CardTitle>
               <CardDescription>
@@ -464,7 +470,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Right - Functions */}
-          <Card className="flex flex-col">
+          <Card className="flex flex-col border-2 h-[500px]">
             <CardHeader>
               <CardTitle>Functions</CardTitle>
               <CardDescription>Available functions</CardDescription>
@@ -499,7 +505,7 @@ export default function Dashboard() {
                         <TableRow 
                           key={index}
                           className={`cursor-pointer ${selectedFunction?.programName === func.programName ? 'bg-accent' : 'hover:bg-muted'}`}
-                          onClick={() => setSelectedFunction(func)}
+                          onClick={() => setSelectedFunction(selectedFunction?.programName === func.programName ? null : func)}
                         >
                           <TableCell className="font-medium">{func.programName || 'Unknown'}</TableCell>
                           <TableCell>{func.originProgramName || 'N/A'}</TableCell>
