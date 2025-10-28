@@ -350,7 +350,7 @@ export default function Execution() {
                             return (
                               <TableRow 
                                 key={index} 
-                                style={isIncompatibleWithSelected ? { backgroundColor: '#fee2e2 !important' } : {}}
+                                className={isIncompatibleWithSelected ? 'row-incompatible-architecture' : ''}
                               >
                                 <TableCell className={`font-mono text-xs ${isIncompatibleWithSelected ? 'text-red-700 dark:text-red-400' : ''}`}>{index + 1}</TableCell>
                                 <TableCell>
@@ -447,8 +447,8 @@ export default function Execution() {
               >
                 {executing ? (
                   <>
-                    <Loader2 className="mr-1 h-3 w-3 animate-spin text-white" />
-                    <span className="text-white">Running...</span>
+                    <Loader2 className="mr-1 h-3 w-3 animate-spin" style={{ color: 'white' }} />
+                    <span style={{ color: 'white' }}>Running...</span>
                   </>
                 ) : (
                   <>
@@ -576,7 +576,7 @@ export default function Execution() {
                                   value={arg.value}
                                   onChange={(e) => handleArgChange(index, e.target.value)}
                                   placeholder="0"
-                                  className="h-7 text-xs w-10"
+                                  className="h-9"
                                   disabled={executing}
                                   min="0"
                                   step="1"

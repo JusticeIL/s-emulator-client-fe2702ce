@@ -188,6 +188,15 @@ All colors MUST be HSL.
     }
   }
 
+  /* Force red background for incompatible instruction rows */
+  .row-incompatible-architecture {
+    background-color: #fee2e2 !important;
+  }
+
+  .dark .row-incompatible-architecture {
+    background-color: rgba(127, 29, 29, 0.5) !important;
+  }
+
   /* Smooth theme transitions */
   body {
     transition: background-color 0.3s ease, color 0.3s ease;
