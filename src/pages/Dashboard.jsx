@@ -45,9 +45,20 @@ export default function Dashboard() {
           fetchAllUsers()
         ]);
         
-        setPrograms(Array.isArray(programsData) ? programsData : []);
-        setFunctions(Array.isArray(functionsData) ? functionsData : []);
-        setUsers(Array.isArray(usersData) ? usersData : []);
+        // Sort data
+        const sortedPrograms = Array.isArray(programsData) 
+          ? [...programsData].sort((a, b) => (a.programName || '').localeCompare(b.programName || ''))
+          : [];
+        const sortedFunctions = Array.isArray(functionsData)
+          ? [...functionsData].sort((a, b) => (a.programName || '').localeCompare(b.programName || ''))
+          : [];
+        const sortedUsers = Array.isArray(usersData)
+          ? [...usersData].sort((a, b) => (a.username || '').localeCompare(b.username || ''))
+          : [];
+        
+        setPrograms(sortedPrograms);
+        setFunctions(sortedFunctions);
+        setUsers(sortedUsers);
       } catch (error) {
         toast({
           title: "Error",
@@ -109,6 +120,9 @@ export default function Dashboard() {
     }
   };
 
+  // Get execution history from selected user
+  const executionHistory = selectedUser?.history?.history || [];
+
   const handleRunProgram = async (programName) => {
     try {
       const response = await setActiveProgram(programName);
@@ -144,7 +158,7 @@ export default function Dashboard() {
       <div className="max-w-[1800px] mx-auto space-y-6">
         {/* Header with Credits in Top Right */}
         <div className="flex justify-between items-start gap-6">
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <div className="flex items-center gap-4">
               <h1 className="text-3xl font-bold">S-Emulator Dashboard</h1>
               <ThemeToggle />
@@ -152,8 +166,8 @@ export default function Dashboard() {
             <p className="text-muted-foreground mt-1">Welcome, {username}</p>
           </div>
           
-          {/* Compact Credit Management - Top Right */}
-          <Card className="w-full max-w-[300px]">
+          {/* Compact Credit Management - Top Right (20-25% width) */}
+          <Card className="w-64 flex-shrink-0">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Credits</CardTitle>
             </CardHeader>
@@ -212,7 +226,7 @@ export default function Dashboard() {
                           <TableCell>{user.functionsLoaded || 0}</TableCell>
                           <TableCell>{user.credits || 0}</TableCell>
                           <TableCell>{user.creditsUsed || 0}</TableCell>
-                          <TableCell>{user.executions || 0}</TableCell>
+                          <TableCell>{user.programExecutionsCounter || 0}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -248,11 +262,11 @@ export default function Dashboard() {
                       {programs.map((program, index) => (
                         <TableRow key={index}>
                           <TableCell className="font-medium">{program.programName || 'Unknown'}</TableCell>
-                          <TableCell>{program.userUploading || 'N/A'}</TableCell>
-                          <TableCell>{program.instructionsAtLevel0 || 0}</TableCell>
-                          <TableCell>{program.maxProgramLevel || 0}</TableCell>
-                          <TableCell>{program.timesExecuted || 0}</TableCell>
-                          <TableCell>{program.averageCreditCost?.toFixed(2) || '0.00'}</TableCell>
+                          <TableCell>{program.uploadingUser || 'N/A'}</TableCell>
+                          <TableCell>{program.programInstructions?.length || 0}</TableCell>
+                          <TableCell>{program.absoluteMaxExpandLevel || 0}</TableCell>
+                          <TableCell>{program.numberOfRuns || 0}</TableCell>
+                          <TableCell>{program.averageCreditsPerRun?.toFixed(2) || '0.00'}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -271,7 +285,7 @@ export default function Dashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent className="flex-1">
-              {selectedUser && selectedUser.executionHistory && selectedUser.executionHistory.length > 0 ? (
+              {executionHistory.length > 0 ? (
                 <div className="max-h-[400px] overflow-auto">
                   <Table>
                     <TableHeader>
@@ -286,15 +300,15 @@ export default function Dashboard() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {selectedUser.executionHistory.map((exec, index) => (
+                      {executionHistory.map((exec, index) => (
                         <TableRow key={index}>
-                          <TableCell>{exec.runId || index + 1}</TableCell>
-                          <TableCell>{exec.type || 'Program'}</TableCell>
+                          <TableCell>{exec.runID || index + 1}</TableCell>
+                          <TableCell>{exec.programType || 'Program'}</TableCell>
                           <TableCell className="font-medium">{exec.programName || 'N/A'}</TableCell>
-                          <TableCell>{exec.architectureType || 'N/A'}</TableCell>
-                          <TableCell>{exec.level || 0}</TableCell>
+                          <TableCell>{exec.architectureGeneration || 'N/A'}</TableCell>
+                          <TableCell>{exec.expansionLevel || 0}</TableCell>
                           <TableCell>{exec.yValue || 0}</TableCell>
-                          <TableCell>{exec.cycles || 0}</TableCell>
+                          <TableCell>{exec.runCycles || 0}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -333,10 +347,10 @@ export default function Dashboard() {
                       {functions.map((func, index) => (
                         <TableRow key={index}>
                           <TableCell className="font-medium">{func.programName || 'Unknown'}</TableCell>
-                          <TableCell>{func.programOrigin || 'N/A'}</TableCell>
-                          <TableCell>{func.userUploading || 'N/A'}</TableCell>
-                          <TableCell>{func.instructionsAtLevel0 || 0}</TableCell>
-                          <TableCell>{func.maxProgramLevel || 0}</TableCell>
+                          <TableCell>{func.originProgramName || 'N/A'}</TableCell>
+                          <TableCell>{func.uploadingUser || 'N/A'}</TableCell>
+                          <TableCell>{func.programInstructions?.length || 0}</TableCell>
+                          <TableCell>{func.absoluteMaxExpandLevel || 0}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
