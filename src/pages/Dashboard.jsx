@@ -408,7 +408,7 @@ export default function Dashboard() {
                           <TableCell>{program.programInstructions?.length || 0}</TableCell>
                           <TableCell>{program.absoluteMaxExpandLevel || 0}</TableCell>
                           <TableCell>{program.numberOfRuns || 0}</TableCell>
-                          <TableCell>{program.averageCreditsPerRun?.toFixed(2) || '0.00'}</TableCell>
+                          <TableCell>{program.averageCreditsPerRun.toFixed(2)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
