@@ -309,7 +309,7 @@ export default function Dashboard() {
 
         {/* 2x2 Grid for Tables */}
         <div 
-          className="mx-auto"
+          className="mx-auto w-full"
           style={{ 
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
@@ -317,6 +317,8 @@ export default function Dashboard() {
             gap: '10px',
             maxWidth: '1800px',
             marginTop: '20px',
+            paddingLeft: 'max(0px, calc((100% - 1800px) / 2))',
+            paddingRight: 'max(0px, calc((100% - 1800px) / 2))',
             justifyContent: 'center',
             alignItems: 'stretch'
           }}
