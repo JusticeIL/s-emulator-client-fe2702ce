@@ -6,7 +6,7 @@ export default function ServerDown() {
           <img 
             src="/caveman-404.gif"
             alt="Caveman 404"
-            className="mx-auto max-w-md w-full rounded-lg"
+            className="mx-auto w-1/2 max-w-sm rounded-lg"
           />
           <h1 className="text-4xl font-bold text-foreground">Oops!</h1>
           <p className="text-xl text-muted-foreground">

@@ -266,7 +266,7 @@ export default function Dashboard() {
           </div>
           
           {/* Top Right - Theme Toggle and Credits */}
-          <div className="flex flex-col items-end gap-3">
+          <div className="flex flex-col items-end gap-2.5">
             <ThemeToggle />
             
             {/* Compact Credit Management */}
