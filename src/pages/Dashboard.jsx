@@ -26,6 +26,10 @@ export default function Dashboard() {
   const [username, setUsername] = useState("");
   const [creditAmount, setCreditAmount] = useState("");
   const [addingCredits, setAddingCredits] = useState(false);
+  const [selectedProgram, setSelectedProgram] = useState(null);
+  const [selectedFunction, setSelectedFunction] = useState(null);
+  const [showVariablesPopup, setShowVariablesPopup] = useState(false);
+  const [selectedRunVariables, setSelectedRunVariables] = useState(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -120,6 +124,81 @@ export default function Dashboard() {
     }
   };
 
+  const handleUnselectUser = async () => {
+    try {
+      const userData = await fetchUser(username);
+      setSelectedUser(userData);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load current user details",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleShowVariables = (run) => {
+    setSelectedRunVariables(run.finalStateOfAllVariables || {});
+    setShowVariablesPopup(true);
+  };
+
+  const handleRerun = (run) => {
+    toast({
+      title: "Rerun",
+      description: `Rerun functionality for ${run.programName} will be implemented`,
+    });
+  };
+
+  const handleExecuteProgram = () => {
+    if (!selectedProgram) {
+      toast({
+        title: "No Program Selected",
+        description: "Please select a program to execute",
+        variant: "destructive",
+      });
+      return;
+    }
+    handleRunProgram(selectedProgram.programName);
+  };
+
+  const handleExecuteFunction = () => {
+    if (!selectedFunction) {
+      toast({
+        title: "No Function Selected",
+        description: "Please select a function to execute",
+        variant: "destructive",
+      });
+      return;
+    }
+    handleRunProgram(selectedFunction.programName);
+  };
+
+  const sortVariables = (variables) => {
+    const entries = Object.entries(variables);
+    const sorted = [];
+    
+    // First, add y variables
+    const yVars = entries.filter(([key]) => key.toLowerCase() === 'y');
+    sorted.push(...yVars);
+    
+    // Then, add x variables
+    const xVars = entries.filter(([key]) => key.toLowerCase().startsWith('x')).sort();
+    sorted.push(...xVars);
+    
+    // Finally, add z variables
+    const zVars = entries.filter(([key]) => key.toLowerCase().startsWith('z')).sort();
+    sorted.push(...zVars);
+    
+    // Add any remaining variables
+    const remaining = entries.filter(([key]) => {
+      const lower = key.toLowerCase();
+      return lower !== 'y' && !lower.startsWith('x') && !lower.startsWith('z');
+    });
+    sorted.push(...remaining);
+    
+    return sorted;
+  };
+
   // Get execution history from selected user
   const executionHistory = selectedUser?.history?.history || [];
 
@@ -199,6 +278,11 @@ export default function Dashboard() {
               <CardDescription>Click a user to view their statistics</CardDescription>
             </CardHeader>
             <CardContent className="flex-1">
+              <div className="mb-4">
+                <Button onClick={handleUnselectUser} variant="outline" size="sm">
+                  Unselect User
+                </Button>
+              </div>
               {users.length === 0 ? (
                 <p className="text-center text-muted-foreground py-8">No users connected</p>
               ) : (
@@ -243,6 +327,11 @@ export default function Dashboard() {
               <CardDescription>Available programs</CardDescription>
             </CardHeader>
             <CardContent className="flex-1">
+              <div className="mb-4">
+                <Button onClick={handleExecuteProgram} variant="default" size="sm">
+                  Execute Program
+                </Button>
+              </div>
               {programs.length === 0 ? (
                 <p className="text-center text-muted-foreground py-8">No programs available</p>
               ) : (
@@ -260,7 +349,11 @@ export default function Dashboard() {
                     </TableHeader>
                     <TableBody>
                       {programs.map((program, index) => (
-                        <TableRow key={index}>
+                        <TableRow 
+                          key={index}
+                          className={`cursor-pointer ${selectedProgram?.programName === program.programName ? 'bg-accent' : 'hover:bg-muted'}`}
+                          onClick={() => setSelectedProgram(program)}
+                        >
                           <TableCell className="font-medium">{program.programName || 'Unknown'}</TableCell>
                           <TableCell>{program.uploadingUser || 'N/A'}</TableCell>
                           <TableCell>{program.programInstructions?.length || 0}</TableCell>
@@ -297,6 +390,7 @@ export default function Dashboard() {
                         <TableHead>Level</TableHead>
                         <TableHead>Y</TableHead>
                         <TableHead>Cycles</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -309,6 +403,24 @@ export default function Dashboard() {
                           <TableCell>{exec.expansionLevel || 0}</TableCell>
                           <TableCell>{exec.yValue || 0}</TableCell>
                           <TableCell>{exec.runCycles || 0}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Button 
+                                onClick={() => handleShowVariables(exec)} 
+                                variant="outline" 
+                                size="sm"
+                              >
+                                Show
+                              </Button>
+                              <Button 
+                                onClick={() => handleRerun(exec)} 
+                                variant="secondary" 
+                                size="sm"
+                              >
+                                Rerun
+                              </Button>
+                            </div>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -329,6 +441,11 @@ export default function Dashboard() {
               <CardDescription>Available functions</CardDescription>
             </CardHeader>
             <CardContent className="flex-1">
+              <div className="mb-4">
+                <Button onClick={handleExecuteFunction} variant="default" size="sm">
+                  Execute Function
+                </Button>
+              </div>
               {functions.length === 0 ? (
                 <p className="text-center text-muted-foreground py-8">No functions available</p>
               ) : (
@@ -345,7 +462,11 @@ export default function Dashboard() {
                     </TableHeader>
                     <TableBody>
                       {functions.map((func, index) => (
-                        <TableRow key={index}>
+                        <TableRow 
+                          key={index}
+                          className={`cursor-pointer ${selectedFunction?.programName === func.programName ? 'bg-accent' : 'hover:bg-muted'}`}
+                          onClick={() => setSelectedFunction(func)}
+                        >
                           <TableCell className="font-medium">{func.programName || 'Unknown'}</TableCell>
                           <TableCell>{func.originProgramName || 'N/A'}</TableCell>
                           <TableCell>{func.uploadingUser || 'N/A'}</TableCell>
@@ -360,6 +481,33 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Variables Popup */}
+        {showVariablesPopup && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowVariablesPopup(false)}>
+            <Card className="w-96 max-h-[80vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
+              <CardHeader>
+                <CardTitle>Final State of Variables</CardTitle>
+                <CardDescription>Sorted: y, x variables, z variables</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {selectedRunVariables && sortVariables(selectedRunVariables).map(([key, value]) => (
+                    <div key={key} className="flex justify-between items-center py-2 border-b">
+                      <span className="font-medium">{key}</span>
+                      <span className="text-muted-foreground">{value}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4">
+                  <Button onClick={() => setShowVariablesPopup(false)} className="w-full">
+                    Close
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );
