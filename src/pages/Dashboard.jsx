@@ -308,9 +308,9 @@ export default function Dashboard() {
         </div>
 
         {/* 2x2 Grid for Tables */}
-        <div className="grid grid-cols-2 gap-3 max-w-[1400px] mx-auto p-3">
+        <div className="grid grid-cols-2 gap-4 mx-auto px-6" style={{ maxWidth: '1600px' }}>
           {/* Top Left - Users */}
-          <Card className="flex flex-col border-2 h-[550px]">
+          <Card className="flex flex-col border-2 h-[550px] max-w-[750px]">
             <CardHeader>
               <CardTitle>Users</CardTitle>
               <CardDescription>Click a user to view their statistics</CardDescription>
@@ -364,7 +364,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Top Right - Programs */}
-          <Card className="flex flex-col border-2 h-[550px]">
+          <Card className="flex flex-col border-2 h-[550px] max-w-[750px]">
             <CardHeader>
               <CardTitle>Programs</CardTitle>
               <CardDescription>Available programs</CardDescription>
@@ -418,7 +418,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Left - User Statistics */}
-          <Card className="flex flex-col border-2 h-[550px]">
+          <Card className="flex flex-col border-2 h-[550px] max-w-[750px]">
             <CardHeader>
               <CardTitle>User Statistics</CardTitle>
               <CardDescription>
@@ -483,7 +483,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Right - Functions */}
-          <Card className="flex flex-col border-2 h-[550px]">
+          <Card className="flex flex-col border-2 h-[550px] max-w-[750px]">
             <CardHeader>
               <CardTitle>Functions</CardTitle>
               <CardDescription>Available functions</CardDescription>
