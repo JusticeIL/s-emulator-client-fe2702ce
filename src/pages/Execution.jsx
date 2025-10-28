@@ -13,6 +13,9 @@ import { fetchActiveProgram, executeProgram, getUsernameCookie, fetchUser, ARCHI
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Loader2, Play, RotateCcw, ArrowLeft } from "lucide-react";
 
+// Architecture level mapping for compatibility checking
+const ARCH_LEVEL = { I: 1, II: 2, III: 3, IV: 4 };
+
 export default function Execution() {
   const [program, setProgram] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -302,11 +305,10 @@ export default function Execution() {
                         </TableHeader>
                         <TableBody>
                           {program.programInstructions.map((instruction, index) => {
-                            const compatible = isInstructionCompatible(instruction);
-                            // Mark in red if instruction requires higher architecture than selected
-                            const isIncompatibleWithSelected = instruction.ArchitectureGeneration && 
-                              selectedArchitecture && 
-                              compareArchitectures(instruction.ArchitectureGeneration, selectedArchitecture) > 0;
+                            // Check compatibility using explicit architecture level mapping
+                            const rowLevel = ARCH_LEVEL[instruction.ArchitectureGeneration] || 0;
+                            const selectedLevel = ARCH_LEVEL[selectedArchitecture] || 0;
+                            const isIncompatibleWithSelected = rowLevel > selectedLevel;
                             
                             const textColorClass = isIncompatibleWithSelected ? 'text-red-700' : '';
                             const rowColorClass = isIncompatibleWithSelected ? 'bg-red-50/80 ring-1 ring-red-200' : '';
@@ -531,7 +533,7 @@ export default function Execution() {
                                   value={arg.value}
                                   onChange={(e) => handleArgChange(index, e.target.value)}
                                   placeholder="0"
-                                  className="h-7 text-xs w-10"
+                                  className="h-7 text-xs w-15"
                                   disabled={executing}
                                   min="0"
                                   step="1"
