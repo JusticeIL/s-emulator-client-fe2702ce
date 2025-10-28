@@ -55,7 +55,7 @@ export default function Execution() {
           navigate("/dashboard");
           return;
         }
-        setProgram(data);
+        setProgram({...data, currentCycles: 0});
         
         // Set default architecture to program's required arch or highest available
         if (data.minimalArchitectureNeededForRun) {
@@ -86,7 +86,7 @@ export default function Execution() {
     try {
       setExpanding(true);
       const updatedProgram = await expandProgram(level);
-      setProgram(updatedProgram);
+      setProgram({...updatedProgram, currentCycles: 0});
       setExpansionLevel(level);
     } catch (error) {
       toast({
@@ -191,7 +191,7 @@ export default function Execution() {
       <div className="flex justify-between items-start gap-6 max-w-[1800px] mx-auto mb-2.5">
         {/* Left: Username */}
         <div className="flex-1 min-w-0">
-          <p className="text-muted-foreground">{username}</p>
+          <p className="text-foreground">{username}</p>
         </div>
         
         {/* Center: Title and Program Name */}
@@ -200,13 +200,15 @@ export default function Execution() {
           <p className="text-muted-foreground mt-1">{program?.programName || "Program Name"}</p>
         </div>
         
-        {/* Right: Available Credits + Theme Toggle */}
-        <div className="flex items-center gap-5 flex-1 justify-end">
-          <div className="text-sm">
-            <span className="text-muted-foreground">Available Credits: </span>
-            <span className="font-semibold text-primary">{currentUserCredits}</span>
+        {/* Right: Available Credits + Theme Toggle - aligned to right */}
+        <div className="flex items-center gap-5 flex-1">
+          <div className="ml-auto flex items-center gap-5">
+            <div className="text-sm">
+              <span className="text-muted-foreground">Available Credits: </span>
+              <span className="font-semibold text-primary">{currentUserCredits}</span>
+            </div>
+            <ThemeToggle />
           </div>
-          <ThemeToggle />
         </div>
       </div>
 
@@ -223,12 +225,12 @@ export default function Execution() {
           {/* Left Column (45%) - Instructions Table */}
           <div className="flex flex-col h-full">
             {/* Expansion Level Selection */}
-            <div className="flex items-center justify-center gap-4 mb-2.5">
+            <div className="flex items-center justify-center gap-4 mb-4">
               <Label className="text-sm">Expansion Level:</Label>
               <Select 
                 value={expansionLevel.toString()} 
                 onValueChange={(val) => handleExpansionLevelChange(parseInt(val))}
-                disabled={expanding}
+                disabled={expanding || executing}
               >
                 <SelectTrigger className="w-32">
                   <SelectValue />
@@ -267,9 +269,9 @@ export default function Execution() {
                         <TableBody>
                           {program.programInstructions.map((instruction, index) => {
                             const compatible = isInstructionCompatible(instruction);
-                            const isBelowMinimum = program?.minimalArchitectureNeededForRun && 
-                              instruction.ArchitectureGeneration && 
-                              compareArchitectures(instruction.ArchitectureGeneration, program.minimalArchitectureNeededForRun) < 0;
+                            const isIncompatibleWithSelected = instruction.ArchitectureGeneration && 
+                              selectedArchitecture && 
+                              compareArchitectures(selectedArchitecture, instruction.ArchitectureGeneration) < 0;
                             
                             return (
                               <TableRow
@@ -283,7 +285,7 @@ export default function Execution() {
                                   </Badge>
                                 </TableCell>
                                 <TableCell className="text-xs">{instruction.label.name}</TableCell>
-                                <TableCell className={`font-mono text-xs ${isBelowMinimum ? 'text-red-500' : ''}`}>
+                                <TableCell className={`font-mono text-xs ${isIncompatibleWithSelected ? 'text-red-500' : ''}`}>
                                   {instruction.instruction}
                                 </TableCell>
                                 <TableCell className="text-xs">{instruction.cycles || '0'}</TableCell>
@@ -326,6 +328,7 @@ export default function Execution() {
                     setProgramArgs(program.programXArguments.map(arg => ({ name: arg, value: '' })));
                   }
                 }}
+                disabled={executing}
                 className="flex-1"
               >
                 <RotateCcw className="h-3 w-3 mr-1" />
@@ -335,8 +338,8 @@ export default function Execution() {
                 size="sm"
                 onClick={handleStartExecution} 
                 disabled={executing || !isArchitectureCompatible()}
-                className="flex-1 hover:ring-2 hover:ring-[#72aa6c] hover:ring-offset-2 disabled:opacity-50 transition-all"
-                style={{ backgroundColor: '#72aa6c', color: 'white' }}
+                className="flex-1 disabled:opacity-50 transition-all hover:bg-transparent hover:text-[#72aa6c] hover:border-[#72aa6c] hover:border-2"
+                style={{ backgroundColor: executing || !isArchitectureCompatible() ? undefined : '#72aa6c', color: executing || !isArchitectureCompatible() ? undefined : 'white' }}
               >
                 {executing ? (
                   <>
@@ -422,7 +425,7 @@ export default function Execution() {
               <CardContent className="w-full p-3">
                 <div className="flex items-center gap-2">
                   <Label className="text-sm whitespace-nowrap">Architecture:</Label>
-                  <Select value={selectedArchitecture} onValueChange={setSelectedArchitecture}>
+                  <Select value={selectedArchitecture} onValueChange={setSelectedArchitecture} disabled={executing}>
                     <SelectTrigger className="h-8 text-xs">
                       <SelectValue placeholder="Architecture" />
                     </SelectTrigger>
