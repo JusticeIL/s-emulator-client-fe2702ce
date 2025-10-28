@@ -179,30 +179,26 @@ export default function Execution() {
       {/* Top Bar */}
       <div className="border-b bg-card">
         <div className="max-w-[1800px] mx-auto px-6 py-4">
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex justify-between items-center">
             {/* Left: Username */}
-            <div className="text-sm text-muted-foreground">
-              User: <span className="font-semibold">{username}</span>
+            <div className="text-sm font-medium">
+              {username}
             </div>
             
-            {/* Center: Title */}
+            {/* Center: Title and Program Name */}
             <div className="flex-1 text-center">
               <h1 className="text-lg font-bold">S-emulator Execution</h1>
+              <h2 className="text-sm text-muted-foreground mt-1">{program?.programName || "Program Name"}</h2>
             </div>
             
             {/* Right: Available Credits + Theme Toggle */}
             <div className="flex items-center gap-4">
-              <div className="text-right">
-                <span className="text-sm text-muted-foreground">Available Credits: </span>
-                <span className="text-sm font-semibold text-primary">{currentUserCredits}</span>
+              <div className="text-sm">
+                <span className="text-muted-foreground">Available Credits: </span>
+                <span className="font-semibold text-primary">{currentUserCredits}</span>
               </div>
               <ThemeToggle />
             </div>
-          </div>
-          
-          {/* Program Name */}
-          <div className="text-center">
-            <h2 className="text-base font-medium">{program?.programName || "Program Name"}</h2>
           </div>
         </div>
       </div>
@@ -299,113 +295,13 @@ export default function Execution() {
             </div>
           </div>
 
-          {/* Right Column - Two Sub-Columns */}
-          <div className="grid grid-cols-2 gap-4 h-full">
-            {/* Left Sub-Column */}
-            <div className="flex flex-col h-full">
-              {/* Buttons - 5% */}
-              <div className="h-[5%] flex gap-2 mb-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    if (program?.programXArguments && Array.isArray(program.programXArguments)) {
-                      setProgramArgs(program.programXArguments.map(arg => ({ name: arg, value: '' })));
-                    }
-                  }}
-                  className="flex-1"
-                >
-                  <RotateCcw className="h-3 w-3 mr-1" />
-                  Setup New Run
-                </Button>
-                <Button 
-                  size="sm"
-                  onClick={handleStartExecution} 
-                  disabled={executing || !isArchitectureCompatible()}
-                  className="flex-1 bg-success hover:bg-success/90 text-success-foreground disabled:opacity-50"
-                >
-                  {executing ? (
-                    <>
-                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                      Running...
-                    </>
-                  ) : (
-                    <>
-                      <Play className="h-3 w-3 mr-1" />
-                      Run
-                    </>
-                  )}
-                </Button>
-              </div>
-
-              {/* Variables Table - 90% */}
-              <Card className="flex-1 h-[90%] flex flex-col overflow-hidden">
-                <CardHeader className="pb-3 flex-shrink-0">
-                  <CardTitle className="text-sm">Variables</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-1 overflow-auto p-0">
-                  {program?.programVariablesCurrentState && program.programVariablesCurrentState.length > 0 ? (
-                    <ScrollArea className="h-full">
-                      <div className="px-6 pb-6">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead className="text-xs">Name</TableHead>
-                              <TableHead className="text-xs">Value</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {[...program.programVariablesCurrentState]
-                              .sort((a, b) => {
-                                const aName = a.name;
-                                const bName = b.name;
-                                
-                                // Sort order: y, then x1, x2, ..., then z1, z2, ...
-                                if (aName === 'y') return -1;
-                                if (bName === 'y') return 1;
-                                
-                                const aIsX = aName.startsWith('x');
-                                const bIsX = bName.startsWith('x');
-                                const aIsZ = aName.startsWith('z');
-                                const bIsZ = bName.startsWith('z');
-                                
-                                if (aIsX && !bIsX) return -1;
-                                if (!aIsX && bIsX) return 1;
-                                if (aIsZ && !bIsZ) return 1;
-                                if (!aIsZ && bIsZ) return -1;
-                                
-                                // Both same type, sort numerically
-                                const aNum = parseInt(aName.slice(1)) || 0;
-                                const bNum = parseInt(bName.slice(1)) || 0;
-                                return aNum - bNum;
-                              })
-                              .map((variable, idx) => (
-                                <TableRow key={idx}>
-                                  <TableCell className="font-mono text-xs">{variable.name}</TableCell>
-                                  <TableCell className="font-mono text-xs">{variable.value}</TableCell>
-                                </TableRow>
-                              ))}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </ScrollArea>
-                  ) : (
-                    <p className="text-center text-muted-foreground text-xs py-4">No variables</p>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Cycles - 5% */}
-              <div className="h-[5%] flex items-center justify-center mt-2">
-                <p className="text-sm text-muted-foreground">Cycles: {program?.currentCycles || 0}</p>
-              </div>
-            </div>
-
-            {/* Right Sub-Column */}
-            <div className="flex flex-col h-full">
-              {/* Architecture Selection - 5% */}
-              <Card className="h-[5%] mb-2 flex items-center">
-                <CardContent className="w-full p-3">
+          {/* Right Column - Single Column */}
+          <div className="flex flex-col h-full gap-4">
+            {/* Architecture Selection */}
+            <Card className="flex items-center">
+              <CardContent className="w-full p-3">
+                <div className="flex items-center gap-2">
+                  <Label className="text-sm whitespace-nowrap">Architecture:</Label>
                   <Select value={selectedArchitecture} onValueChange={setSelectedArchitecture}>
                     <SelectTrigger className="h-8 text-xs">
                       <SelectValue placeholder="Architecture" />
@@ -418,68 +314,158 @@ export default function Execution() {
                       ))}
                     </SelectContent>
                   </Select>
-                </CardContent>
-              </Card>
+                </div>
+                {!isArchitectureCompatible() && (
+                  <p className="text-xs text-destructive mt-2">
+                    Requires Architecture {program?.minimalArchitectureNeededForRun}+
+                  </p>
+                )}
+              </CardContent>
+            </Card>
 
-              {/* Arguments Table - 90% */}
-              <Card className="flex-1 h-[90%] flex flex-col overflow-hidden">
-                <CardHeader className="pb-3 flex-shrink-0">
-                  <CardTitle className="text-sm">Arguments</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-1 overflow-auto p-0">
-                  {programArgs && programArgs.length > 0 ? (
-                    <ScrollArea className="h-full">
-                      <div className="px-6 pb-6">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead className="text-xs">Argument Name</TableHead>
-                              <TableHead className="text-xs">Value</TableHead>
+            {/* Buttons */}
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  if (program?.programXArguments && Array.isArray(program.programXArguments)) {
+                    setProgramArgs(program.programXArguments.map(arg => ({ name: arg, value: '' })));
+                  }
+                }}
+                className="flex-1"
+              >
+                <RotateCcw className="h-3 w-3 mr-1" />
+                Setup New Run
+              </Button>
+              <Button 
+                size="sm"
+                onClick={handleStartExecution} 
+                disabled={executing || !isArchitectureCompatible()}
+                className="flex-1 bg-success hover:bg-success/90 text-success-foreground disabled:opacity-50"
+              >
+                {executing ? (
+                  <>
+                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                    Running...
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-3 w-3 mr-1" />
+                    Run
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Arguments Table */}
+            <Card className="flex-1 flex flex-col overflow-hidden">
+              <CardHeader className="pb-3 flex-shrink-0">
+                <CardTitle className="text-sm">Arguments</CardTitle>
+              </CardHeader>
+              <CardContent className="flex-1 overflow-auto p-0">
+                {programArgs && programArgs.length > 0 ? (
+                  <ScrollArea className="h-full">
+                    <div className="px-6 pb-6">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="text-xs">Argument Name</TableHead>
+                            <TableHead className="text-xs">Value</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {programArgs.map((arg, index) => (
+                            <TableRow key={index}>
+                              <TableCell className="font-mono text-xs">{arg.name}</TableCell>
+                              <TableCell>
+                                <Input
+                                  type="text"
+                                  value={arg.value}
+                                  onChange={(e) => handleArgChange(index, e.target.value)}
+                                  placeholder="0"
+                                  className="h-7 text-xs"
+                                />
+                              </TableCell>
                             </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {programArgs.map((arg, index) => (
-                              <TableRow key={index}>
-                                <TableCell className="font-mono text-xs">{arg.name}</TableCell>
-                                <TableCell>
-                                  <Input
-                                    type="text"
-                                    value={arg.value}
-                                    onChange={(e) => handleArgChange(index, e.target.value)}
-                                    placeholder="0"
-                                    className="h-7 text-xs"
-                                  />
-                                </TableCell>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </ScrollArea>
+                ) : (
+                  <p className="text-center text-muted-foreground text-xs py-4">No arguments required</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Variables Table */}
+            <Card className="flex-1 flex flex-col overflow-hidden">
+              <CardHeader className="pb-3 flex-shrink-0">
+                <CardTitle className="text-sm">Variables</CardTitle>
+              </CardHeader>
+              <CardContent className="flex-1 overflow-auto p-0">
+                {program?.programVariablesCurrentState && program.programVariablesCurrentState.length > 0 ? (
+                  <ScrollArea className="h-full">
+                    <div className="px-6 pb-6">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="text-xs">Name</TableHead>
+                            <TableHead className="text-xs">Value</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {[...program.programVariablesCurrentState]
+                            .sort((a, b) => {
+                              const aName = a.name;
+                              const bName = b.name;
+                              
+                              // Sort order: y, then x1, x2, ..., then z1, z2, ...
+                              if (aName === 'y') return -1;
+                              if (bName === 'y') return 1;
+                              
+                              const aIsX = aName.startsWith('x');
+                              const bIsX = bName.startsWith('x');
+                              const aIsZ = aName.startsWith('z');
+                              const bIsZ = bName.startsWith('z');
+                              
+                              if (aIsX && !bIsX) return -1;
+                              if (!aIsX && bIsX) return 1;
+                              if (aIsZ && !bIsZ) return 1;
+                              if (!aIsZ && bIsZ) return -1;
+                              
+                              // Both same type, sort numerically
+                              const aNum = parseInt(aName.slice(1)) || 0;
+                              const bNum = parseInt(bName.slice(1)) || 0;
+                              return aNum - bNum;
+                            })
+                            .map((variable, idx) => (
+                              <TableRow key={idx}>
+                                <TableCell className="font-mono text-xs">{variable.name}</TableCell>
+                                <TableCell className="font-mono text-xs">{variable.value}</TableCell>
                               </TableRow>
                             ))}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </ScrollArea>
-                  ) : (
-                    <p className="text-center text-muted-foreground text-xs py-4">No arguments required</p>
-                  )}
-                </CardContent>
-              </Card>
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </ScrollArea>
+                ) : (
+                  <p className="text-center text-muted-foreground text-xs py-4">No variables</p>
+                )}
+              </CardContent>
+            </Card>
 
-              {/* Back to Dashboard - 5% */}
-              <div className="h-[5%] flex items-center justify-center mt-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => navigate("/dashboard")}
-                  className="w-full"
-                >
-                  Back to Dashboard
-                </Button>
-              </div>
-              
-              {/* Architecture Warning */}
-              {!isArchitectureCompatible() && (
-                <p className="text-xs text-destructive text-center mt-1">
-                  Requires Architecture {program?.minimalArchitectureNeededForRun}+
-                </p>
-              )}
+            {/* Cycles and Back Button */}
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-sm text-muted-foreground">Cycles: {program?.currentCycles || 0}</p>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate("/dashboard")}
+              >
+                Back to Dashboard
+              </Button>
             </div>
           </div>
         </div>
