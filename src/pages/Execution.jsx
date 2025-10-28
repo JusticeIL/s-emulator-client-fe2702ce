@@ -350,7 +350,7 @@ export default function Execution() {
                             return (
                               <TableRow 
                                 key={index} 
-                                className={isIncompatibleWithSelected ? '!bg-red-100 dark:!bg-red-950/50' : ''}
+                                style={isIncompatibleWithSelected ? { backgroundColor: '#fee2e2 !important' } : {}}
                               >
                                 <TableCell className={`font-mono text-xs ${isIncompatibleWithSelected ? 'text-red-700 dark:text-red-400' : ''}`}>{index + 1}</TableCell>
                                 <TableCell>
@@ -427,8 +427,11 @@ export default function Execution() {
                 onMouseEnter={(e) => {
                   if (!executing && isArchitectureCompatible()) {
                     e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = 'white';
+                    e.currentTarget.style.color = '#72aa6c';
                     e.currentTarget.style.border = '2px solid #72aa6c';
+                    // Change icon color to green
+                    const svg = e.currentTarget.querySelector('svg');
+                    if (svg) svg.style.color = '#72aa6c';
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -436,6 +439,9 @@ export default function Execution() {
                     e.currentTarget.style.backgroundColor = '#72aa6c';
                     e.currentTarget.style.color = 'white';
                     e.currentTarget.style.border = '2px solid #72aa6c';
+                    // Change icon color back to white
+                    const svg = e.currentTarget.querySelector('svg');
+                    if (svg) svg.style.color = 'white';
                   }
                 }}
               >
@@ -570,7 +576,7 @@ export default function Execution() {
                                   value={arg.value}
                                   onChange={(e) => handleArgChange(index, e.target.value)}
                                   placeholder="0"
-                                  className="h-7 text-xs w-13"
+                                  className="h-7 text-xs w-10"
                                   disabled={executing}
                                   min="0"
                                   step="1"
