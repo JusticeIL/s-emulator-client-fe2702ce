@@ -11,7 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { fetchActiveProgram, executeProgram, getUsernameCookie, fetchUser, ARCHITECTURE_GENERATIONS, compareArchitectures, expandProgram } from "@/lib/api";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Loader2, Play, RotateCcw } from "lucide-react";
+import { Loader2, Play, RotateCcw, ArrowLeft } from "lucide-react";
 
 export default function Execution() {
   const [program, setProgram] = useState(null);
@@ -201,12 +201,12 @@ export default function Execution() {
         </div>
         
         {/* Right: Available Credits + Theme Toggle */}
-        <div className="flex flex-col items-end gap-4 flex-1">
-          <ThemeToggle />
+        <div className="flex items-center gap-5 flex-1 justify-end">
           <div className="text-sm">
             <span className="text-muted-foreground">Available Credits: </span>
             <span className="font-semibold text-primary">{currentUserCredits}</span>
           </div>
+          <ThemeToggle />
         </div>
       </div>
 
@@ -222,8 +222,8 @@ export default function Execution() {
         >
           {/* Left Column (45%) - Instructions Table */}
           <div className="flex flex-col h-full">
-            {/* Expansion Level Selection - 5% */}
-            <div className="h-[5%] flex items-center justify-center gap-4 mb-2">
+            {/* Expansion Level Selection */}
+            <div className="flex items-center justify-center gap-4 mb-2.5">
               <Label className="text-sm">Expansion Level:</Label>
               <Select 
                 value={expansionLevel.toString()} 
@@ -245,8 +245,8 @@ export default function Execution() {
               {expanding && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
             </div>
 
-            {/* Instructions Table - 90% */}
-            <Card className="flex-1 h-[90%] flex flex-col overflow-hidden">
+            {/* Instructions Table */}
+            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '700px' }}>
               <CardContent className="flex-1 flex flex-col min-h-0 p-0">
                 {!program?.programInstructions || program.programInstructions.length === 0 ? (
                   <p className="text-center text-muted-foreground py-8">No instructions available</p>
@@ -267,6 +267,9 @@ export default function Execution() {
                         <TableBody>
                           {program.programInstructions.map((instruction, index) => {
                             const compatible = isInstructionCompatible(instruction);
+                            const isBelowMinimum = program?.minimalArchitectureNeededForRun && 
+                              instruction.ArchitectureGeneration && 
+                              compareArchitectures(instruction.ArchitectureGeneration, program.minimalArchitectureNeededForRun) < 0;
                             
                             return (
                               <TableRow
@@ -280,7 +283,9 @@ export default function Execution() {
                                   </Badge>
                                 </TableCell>
                                 <TableCell className="text-xs">{instruction.label.name}</TableCell>
-                                <TableCell className="font-mono text-xs">{instruction.instruction}</TableCell>
+                                <TableCell className={`font-mono text-xs ${isBelowMinimum ? 'text-red-500' : ''}`}>
+                                  {instruction.instruction}
+                                </TableCell>
                                 <TableCell className="text-xs">{instruction.cycles || '0'}</TableCell>
                                 <TableCell className="text-xs">{instruction.ArchitectureGeneration || 'IV'}</TableCell>
                               </TableRow>
@@ -294,8 +299,8 @@ export default function Execution() {
               </CardContent>
             </Card>
 
-            {/* Summary Lines - 5% */}
-            <div className="h-[5%] border-t bg-muted/30 px-4 flex flex-col justify-center">
+            {/* Summary Lines */}
+            <div className="border-t bg-muted/30 px-4 py-2 mt-2.5 flex flex-col justify-center">
               {program?.programInstructions && program.programInstructions.length > 0 && (
                 <>
                   <p className="text-xs text-muted-foreground text-center">
@@ -312,7 +317,7 @@ export default function Execution() {
           {/* Middle Column (20%) - Buttons, Variables, Cycles */}
           <div className="flex flex-col h-full gap-4">
             {/* Buttons */}
-            <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
               <Button 
                 variant="outline" 
                 size="sm"
@@ -321,7 +326,7 @@ export default function Execution() {
                     setProgramArgs(program.programXArguments.map(arg => ({ name: arg, value: '' })));
                   }
                 }}
-                className="w-full"
+                className="flex-1"
               >
                 <RotateCcw className="h-3 w-3 mr-1" />
                 Setup New Run
@@ -330,7 +335,8 @@ export default function Execution() {
                 size="sm"
                 onClick={handleStartExecution} 
                 disabled={executing || !isArchitectureCompatible()}
-                className="w-full bg-success hover:bg-success/90 text-success-foreground disabled:opacity-50"
+                className="flex-1 hover:ring-2 hover:ring-[#72aa6c] hover:ring-offset-2 disabled:opacity-50 transition-all"
+                style={{ backgroundColor: '#72aa6c', color: 'white' }}
               >
                 {executing ? (
                   <>
@@ -347,7 +353,7 @@ export default function Execution() {
             </div>
 
             {/* Variables Table */}
-            <Card className="flex-1 flex flex-col overflow-hidden">
+            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '700px' }}>
               <CardHeader className="pb-3 flex-shrink-0">
                 <CardTitle className="text-sm">Variables</CardTitle>
               </CardHeader>
@@ -423,7 +429,7 @@ export default function Execution() {
                     <SelectContent>
                       {ARCHITECTURE_GENERATIONS.map(arch => (
                         <SelectItem key={arch} value={arch} className="text-xs">
-                          Architecture {arch}
+                          {arch}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -438,7 +444,7 @@ export default function Execution() {
             </Card>
 
             {/* Arguments Table */}
-            <Card className="flex-1 flex flex-col overflow-hidden">
+            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '700px' }}>
               <CardHeader className="pb-3 flex-shrink-0">
                 <CardTitle className="text-sm">Arguments</CardTitle>
               </CardHeader>
@@ -486,6 +492,7 @@ export default function Execution() {
                 onClick={() => navigate("/dashboard")}
                 className="w-full"
               >
+                <ArrowLeft className="h-3 w-3 mr-1" />
                 Back to Dashboard
               </Button>
             </div>
