@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -28,6 +28,7 @@ export default function Execution() {
   const [expanding, setExpanding] = useState(false);
   const [showSlowWarning, setShowSlowWarning] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -61,14 +62,50 @@ export default function Execution() {
         }
         setProgram({...data, currentCycles: 0});
         
-        // Set default architecture to program's required arch or highest available
-        if (data.minimalArchitectureNeededForRun) {
-          setSelectedArchitecture(data.minimalArchitectureNeededForRun);
-        }
+        // Check if this is a rerun
+        const rerunData = location.state?.rerunData;
         
-        // Initialize program arguments with empty values
-        if (data.programXArguments && Array.isArray(data.programXArguments)) {
-          setProgramArgs(data.programXArguments.map(arg => ({ name: arg, value: '' })));
+        if (rerunData) {
+          // Set architecture from rerun data
+          if (rerunData.architecture) {
+            setSelectedArchitecture(rerunData.architecture);
+          }
+          
+          // Set expansion level
+          if (rerunData.expansionLevel !== undefined) {
+            setExpansionLevel(rerunData.expansionLevel);
+            // Expand the program if needed
+            if (rerunData.expansionLevel > 0) {
+              try {
+                const expandedProgram = await expandProgram(rerunData.expansionLevel);
+                setProgram({...expandedProgram, currentCycles: 0});
+              } catch (error) {
+                console.error('Failed to expand program during rerun:', error);
+              }
+            }
+          }
+          
+          // Initialize program arguments with rerun values
+          if (data.programXArguments && Array.isArray(data.programXArguments)) {
+            const argsWithValues = data.programXArguments.map(arg => {
+              const value = rerunData.arguments?.[arg] || '';
+              return { name: arg, value: String(value) };
+            });
+            setProgramArgs(argsWithValues);
+          }
+          
+          // Clear the rerun data from navigation state
+          navigate(location.pathname, { replace: true, state: {} });
+        } else {
+          // Normal load - Set default architecture to program's required arch or highest available
+          if (data.minimalArchitectureNeededForRun) {
+            setSelectedArchitecture(data.minimalArchitectureNeededForRun);
+          }
+          
+          // Initialize program arguments with empty values
+          if (data.programXArguments && Array.isArray(data.programXArguments)) {
+            setProgramArgs(data.programXArguments.map(arg => ({ name: arg, value: '' })));
+          }
         }
       } catch (error) {
         toast({
@@ -310,23 +347,23 @@ export default function Execution() {
                             const selectedLevel = ARCH_LEVEL[selectedArchitecture] || 0;
                             const isIncompatibleWithSelected = rowLevel > selectedLevel;
                             
-                            const textColorClass = isIncompatibleWithSelected ? 'text-red-700' : '';
-                            const rowColorClass = isIncompatibleWithSelected ? 'bg-red-50/80 ring-1 ring-red-200' : '';
-                            
                             return (
-                              <TableRow key={index} className={rowColorClass}>
-                                <TableCell className={`font-mono text-xs ${textColorClass}`}>{index + 1}</TableCell>
+                              <TableRow 
+                                key={index} 
+                                className={isIncompatibleWithSelected ? 'bg-red-100 dark:bg-red-950/50' : ''}
+                              >
+                                <TableCell className={`font-mono text-xs ${isIncompatibleWithSelected ? 'text-red-700 dark:text-red-400' : ''}`}>{index + 1}</TableCell>
                                 <TableCell>
-                                  <Badge variant="outline" className={`text-xs ${textColorClass}`}>
+                                  <Badge variant="outline" className={`text-xs ${isIncompatibleWithSelected ? 'text-red-700 dark:text-red-400 border-red-700 dark:border-red-400' : ''}`}>
                                     {instruction.type || 'S'}
                                   </Badge>
                                 </TableCell>
-                                <TableCell className={`text-xs ${textColorClass}`}>{instruction.label.name}</TableCell>
-                                <TableCell className={`font-mono text-xs ${textColorClass}`}>
+                                <TableCell className={`text-xs ${isIncompatibleWithSelected ? 'text-red-700 dark:text-red-400' : ''}`}>{instruction.label.name}</TableCell>
+                                <TableCell className={`font-mono text-xs ${isIncompatibleWithSelected ? 'text-red-700 dark:text-red-400' : ''}`}>
                                   {instruction.instruction}
                                 </TableCell>
-                                <TableCell className={`text-xs ${textColorClass}`}>{instruction.cycles || '0'}</TableCell>
-                                <TableCell className={`text-xs ${textColorClass}`}>{instruction.ArchitectureGeneration || 'IV'}</TableCell>
+                                <TableCell className={`text-xs ${isIncompatibleWithSelected ? 'text-red-700 dark:text-red-400' : ''}`}>{instruction.cycles || '0'}</TableCell>
+                                <TableCell className={`text-xs ${isIncompatibleWithSelected ? 'text-red-700 dark:text-red-400' : ''}`}>{instruction.ArchitectureGeneration || 'IV'}</TableCell>
                               </TableRow>
                             );
                           })}
@@ -381,7 +418,7 @@ export default function Execution() {
                 size="sm"
                 onClick={handleStartExecution} 
                 disabled={executing || !isArchitectureCompatible()}
-                className="flex-1 transition-all disabled:opacity-100"
+                className="flex-1 transition-all disabled:opacity-100 text-white hover:text-[#72aa6c]"
                 style={{ 
                   backgroundColor: executing ? '#d97706' : (!isArchitectureCompatible() ? '#3a5a35' : '#72aa6c'),
                   color: 'white',
@@ -404,13 +441,13 @@ export default function Execution() {
               >
                 {executing ? (
                   <>
-                    <Loader2 className="mr-1 h-3 w-3 animate-spin" style={{ color: 'white' }} />
-                    <span style={{ color: 'white' }}>Running...</span>
+                    <Loader2 className="mr-1 h-3 w-3 animate-spin text-white" />
+                    <span className="text-white">Running...</span>
                   </>
                 ) : (
                   <>
-                    <Play className="h-3 w-3 mr-1" />
-                    Run
+                    <Play className="h-3 w-3 mr-1 text-white" />
+                    <span className="text-white">Run</span>
                   </>
                 )}
               </Button>
@@ -533,7 +570,7 @@ export default function Execution() {
                                   value={arg.value}
                                   onChange={(e) => handleArgChange(index, e.target.value)}
                                   placeholder="0"
-                                  className="h-7 text-xs w-14"
+                                  className="h-7 text-xs w-12"
                                   disabled={executing}
                                   min="0"
                                   step="1"

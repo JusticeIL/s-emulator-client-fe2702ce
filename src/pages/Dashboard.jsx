@@ -176,18 +176,25 @@ export default function Dashboard() {
     }
   };
 
-  const handleUnselectUser = async () => {
-    try {
-      const userData = await fetchUser(username);
-      setSelectedUser(userData);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load current user details",
-        variant: "destructive",
-      });
-    }
+  const handleUnselectUser = () => {
+    setSelectedUser(null);
   };
+
+  // Load current user's history when no user is selected
+  useEffect(() => {
+    const loadCurrentUserHistory = async () => {
+      if (!selectedUser && username) {
+        try {
+          const userData = await fetchUser(username);
+          setSelectedUser(userData);
+        } catch (error) {
+          console.error('Failed to load current user history:', error);
+        }
+      }
+    };
+
+    loadCurrentUserHistory();
+  }, [selectedUser, username]);
 
   const handleShowVariables = (run) => {
     try {
@@ -233,11 +240,37 @@ export default function Dashboard() {
     }
   };
 
-  const handleRerun = (run) => {
-    toast({
-      title: "Rerun",
-      description: `Rerun functionality for ${run.programName} will be implemented`,
-    });
+  const handleRerun = async (run) => {
+    try {
+      // Set the program as active
+      const response = await setActiveProgram(run.programName);
+      
+      if (!response.ok) {
+        toast({
+          title: "Error",
+          description: "Failed to set active program",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Navigate to execution page with rerun data
+      navigate('/execution', { 
+        state: { 
+          rerunData: {
+            expansionLevel: run.expansionLevel || 0,
+            architecture: run.architectureGeneration || 'IV',
+            arguments: run.xVariables || {}
+          }
+        } 
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to initiate rerun",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleExecuteProgram = () => {
@@ -402,7 +435,7 @@ export default function Dashboard() {
                   onClick={handleUnselectUser} 
                   variant="outline" 
                   size="sm"
-                  disabled={!selectedUser}
+                  disabled={!selectedUser || selectedUser.username === username}
                 >
                   Unselect User
                 </Button>
@@ -632,8 +665,8 @@ export default function Dashboard() {
               <CardHeader className="flex-shrink-0">
                 <CardTitle>Final State of Variables</CardTitle>
               </CardHeader>
-              <CardContent className="flex-1 overflow-hidden">
-                <div className="max-h-[60vh] overflow-y-auto">
+              <CardContent className="flex-1 overflow-hidden p-4">
+                <div className="max-h-[60vh] overflow-y-auto border rounded">
                   <Table>
                     <TableHeader>
                       <TableRow>
