@@ -189,22 +189,47 @@ export default function Dashboard() {
   };
 
   const handleShowVariables = (run) => {
-    if (!run || !run.finalStateOfAllVariables) {
-      setSelectedRunVariables(null);
+    try {
+      if (!run || !run.finalStateOfAllVariables) {
+        setSelectedRunVariables(null);
+        setShowVariablesPopup(true);
+        return;
+      }
+      
+      let variables = run.finalStateOfAllVariables;
+      
+      // If variables is a string, try to parse it as JSON
+      if (typeof variables === 'string') {
+        try {
+          variables = JSON.parse(variables);
+        } catch (parseError) {
+          console.error('Failed to parse variables JSON:', parseError);
+          setSelectedRunVariables(null);
+          setShowVariablesPopup(true);
+          return;
+        }
+      }
+      
+      // Ensure variables is a valid object with keys (not an array)
+      if (typeof variables === 'object' && 
+          variables !== null && 
+          !Array.isArray(variables) &&
+          Object.keys(variables).length > 0) {
+        setSelectedRunVariables(variables);
+      } else {
+        setSelectedRunVariables(null);
+      }
+      
       setShowVariablesPopup(true);
-      return;
-    }
-    
-    const variables = run.finalStateOfAllVariables;
-    
-    // Ensure variables is a valid object with keys
-    if (typeof variables === 'object' && variables !== null && Object.keys(variables).length > 0) {
-      setSelectedRunVariables(variables);
-    } else {
+    } catch (error) {
+      console.error('Error in handleShowVariables:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load variables data",
+        variant: "destructive",
+      });
       setSelectedRunVariables(null);
     }
-    
-    setShowVariablesPopup(true);
   };
 
   const handleRerun = (run) => {
@@ -239,29 +264,39 @@ export default function Dashboard() {
   };
 
   const sortVariables = (variables) => {
-    const entries = Object.entries(variables);
-    const sorted = [];
-    
-    // First, add y variables
-    const yVars = entries.filter(([key]) => key.toLowerCase() === 'y');
-    sorted.push(...yVars);
-    
-    // Then, add x variables
-    const xVars = entries.filter(([key]) => key.toLowerCase().startsWith('x')).sort();
-    sorted.push(...xVars);
-    
-    // Finally, add z variables
-    const zVars = entries.filter(([key]) => key.toLowerCase().startsWith('z')).sort();
-    sorted.push(...zVars);
-    
-    // Add any remaining variables
-    const remaining = entries.filter(([key]) => {
-      const lower = key.toLowerCase();
-      return lower !== 'y' && !lower.startsWith('x') && !lower.startsWith('z');
-    });
-    sorted.push(...remaining);
-    
-    return sorted;
+    try {
+      // Defensive check
+      if (!variables || typeof variables !== 'object' || Array.isArray(variables)) {
+        return [];
+      }
+      
+      const entries = Object.entries(variables);
+      const sorted = [];
+      
+      // First, add y variables
+      const yVars = entries.filter(([key]) => key.toLowerCase() === 'y');
+      sorted.push(...yVars);
+      
+      // Then, add x variables
+      const xVars = entries.filter(([key]) => key.toLowerCase().startsWith('x')).sort();
+      sorted.push(...xVars);
+      
+      // Finally, add z variables
+      const zVars = entries.filter(([key]) => key.toLowerCase().startsWith('z')).sort();
+      sorted.push(...zVars);
+      
+      // Add any remaining variables
+      const remaining = entries.filter(([key]) => {
+        const lower = key.toLowerCase();
+        return lower !== 'y' && !lower.startsWith('x') && !lower.startsWith('z');
+      });
+      sorted.push(...remaining);
+      
+      return sorted;
+    } catch (error) {
+      console.error('Error in sortVariables:', error);
+      return [];
+    }
   };
 
   // Get execution history from selected user
