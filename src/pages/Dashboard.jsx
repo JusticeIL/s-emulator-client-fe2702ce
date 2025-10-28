@@ -266,7 +266,7 @@ export default function Dashboard() {
           </div>
           
           {/* Top Right - Theme Toggle and Credits */}
-          <div className="flex flex-col items-end gap-2.5">
+          <div className="flex flex-col items-end gap-4">
             <ThemeToggle />
             
             {/* Compact Credit Management */}
@@ -295,7 +295,7 @@ export default function Dashboard() {
         </div>
 
         {/* 2x2 Grid for Tables - Always 2 columns */}
-        <div className="grid grid-cols-2 gap-2.5 max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 gap-4 max-w-7xl mx-auto items-start justify-center">
           {/* Top Left - Users */}
           <Card className="flex flex-col border-2 h-[500px]">
             <CardHeader>
@@ -525,12 +525,10 @@ export default function Dashboard() {
         {/* Variables Popup with Overlay */}
         {showVariablesPopup && (
           <>
-            <style>
-              {`body { overflow: hidden; }`}
-            </style>
             <div 
-              className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 animate-fade-in" 
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] animate-fade-in" 
               onClick={() => setShowVariablesPopup(false)}
+              style={{ backgroundColor: 'rgba(0, 0, 0, 0.85)' }}
             >
             <Card 
               className="w-96 max-h-[80vh] overflow-auto shadow-2xl animate-scale-in" 
