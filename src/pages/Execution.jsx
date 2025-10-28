@@ -533,7 +533,7 @@ export default function Execution() {
                                   value={arg.value}
                                   onChange={(e) => handleArgChange(index, e.target.value)}
                                   placeholder="0"
-                                  className="h-7 text-xs w-15"
+                                  className="h-7 text-xs w-14"
                                   disabled={executing}
                                   min="0"
                                   step="1"
