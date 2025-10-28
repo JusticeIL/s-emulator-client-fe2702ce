@@ -269,8 +269,8 @@ export default function Execution() {
                                     {instruction.type || 'S'}
                                   </Badge>
                                 </TableCell>
-                                 <TableCell className="text-xs">{instruction.label?.labelName || '-'}</TableCell>
-                                 <TableCell className="font-mono text-xs">{instruction.instruction || '-'}</TableCell>
+                                <TableCell className="text-xs">{instruction.label.name}</TableCell>
+                                <TableCell className="font-mono text-xs">{instruction.instruction}</TableCell>
                                 <TableCell className="text-xs">{instruction.cycles || '0'}</TableCell>
                                 <TableCell className="text-xs">{instruction.ArchitectureGeneration || 'IV'}</TableCell>
                               </TableRow>
@@ -357,8 +357,8 @@ export default function Execution() {
                           <TableBody>
                             {[...program.programVariablesCurrentState]
                               .sort((a, b) => {
-                                const aName = a.variableName;
-                                const bName = b.variableName;
+                                const aName = a.name;
+                                const bName = b.name;
                                 
                                 // Sort order: y, then x1, x2, ..., then z1, z2, ...
                                 if (aName === 'y') return -1;
@@ -381,8 +381,8 @@ export default function Execution() {
                               })
                               .map((variable, idx) => (
                                 <TableRow key={idx}>
-                                  <TableCell className="font-mono text-xs">{variable.variableName}</TableCell>
-                                  <TableCell className="font-mono text-xs">{variable.variableValue}</TableCell>
+                                  <TableCell className="font-mono text-xs">{variable.name}</TableCell>
+                                  <TableCell className="font-mono text-xs">{variable.value}</TableCell>
                                 </TableRow>
                               ))}
                           </TableBody>
