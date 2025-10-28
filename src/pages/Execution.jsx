@@ -127,12 +127,23 @@ export default function Execution() {
 
     try {
       setExecuting(true);
-      const argsObj = {};
-      programArgs.forEach(arg => {
-        argsObj[arg.name] = arg.value;
-      });
-      const result = await executeProgram(argsObj, selectedArchitecture);
+      // Build arguments as array of VariableDTO objects
+      const argumentsSet = programArgs.map(arg => ({
+        name: arg.name,
+        value: arg.value
+      }));
+      
+      const result = await executeProgram(argumentsSet, selectedArchitecture);
       setProgram(result);
+      
+      // Update credits after successful execution
+      try {
+        const userData = await fetchUser(username);
+        setCurrentUserCredits(userData.credits || 0);
+      } catch (error) {
+        console.error('Failed to refresh user credits:', error);
+      }
+      
       toast({
         title: "Execution Complete",
         description: `Program finished in ${result.currentCycles} cycles`,
@@ -175,37 +186,40 @@ export default function Execution() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background p-6">
       {/* Top Bar */}
-      <div className="border-b bg-card">
-        <div className="max-w-[1800px] mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            {/* Left: Username */}
-            <div className="text-sm font-medium">
-              {username}
-            </div>
-            
-            {/* Center: Title and Program Name */}
-            <div className="flex-1 text-center">
-              <h1 className="text-lg font-bold">S-emulator Execution</h1>
-              <h2 className="text-sm text-muted-foreground mt-1">{program?.programName || "Program Name"}</h2>
-            </div>
-            
-            {/* Right: Available Credits + Theme Toggle */}
-            <div className="flex items-center gap-4">
-              <div className="text-sm">
-                <span className="text-muted-foreground">Available Credits: </span>
-                <span className="font-semibold text-primary">{currentUserCredits}</span>
-              </div>
-              <ThemeToggle />
-            </div>
+      <div className="flex justify-between items-start gap-6 max-w-[1800px] mx-auto mb-2.5">
+        {/* Left: Username */}
+        <div className="flex-1 min-w-0">
+          <p className="text-muted-foreground">{username}</p>
+        </div>
+        
+        {/* Center: Title and Program Name */}
+        <div className="flex-1 text-center">
+          <h1 className="text-3xl font-bold">S-emulator Execution</h1>
+          <p className="text-muted-foreground mt-1">{program?.programName || "Program Name"}</p>
+        </div>
+        
+        {/* Right: Available Credits + Theme Toggle */}
+        <div className="flex flex-col items-end gap-4 flex-1">
+          <ThemeToggle />
+          <div className="text-sm">
+            <span className="text-muted-foreground">Available Credits: </span>
+            <span className="font-semibold text-primary">{currentUserCredits}</span>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-[1800px] mx-auto px-6 py-6 h-[calc(100vh-180px)]">
-        <div className="grid grid-cols-[45%_20%_20%] gap-[7.5%] h-full">
+      <div className="max-w-[1800px] mx-auto h-[calc(100vh-180px)]">
+        <div 
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '45% 20% 20%',
+            gap: '7.5%',
+            height: '100%',
+          }}
+        >
           {/* Left Column (45%) - Instructions Table */}
           <div className="flex flex-col h-full">
             {/* Expansion Level Selection - 5% */}

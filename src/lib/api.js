@@ -136,12 +136,12 @@ export async function checkExecution(username) {
 }
 
 // Execution
-export async function executeProgram(args = {}, architectureGeneration = 'IV') {
+export async function executeProgram(argumentsSet = [], architecture = 'IV') {
   const response = await fetchAPI('/program/execute', {
     method: 'POST',
     body: JSON.stringify({
-      arguments: args,
-      architectureGeneration,
+      architecture,
+      arguments: argumentsSet,
     }),
   });
   if (!response.ok) {
