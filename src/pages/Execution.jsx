@@ -205,8 +205,8 @@ export default function Execution() {
 
       {/* Main Content */}
       <div className="max-w-[1800px] mx-auto px-6 py-6 h-[calc(100vh-180px)]">
-        <div className="grid grid-cols-[45%_45%] gap-[10%] h-full">
-          {/* Left Column - Instructions Table */}
+        <div className="grid grid-cols-[45%_20%_20%] gap-[7.5%] h-full">
+          {/* Left Column (45%) - Instructions Table */}
           <div className="flex flex-col h-full">
             {/* Expansion Level Selection - 5% */}
             <div className="h-[5%] flex items-center justify-center gap-4 mb-2">
@@ -295,36 +295,10 @@ export default function Execution() {
             </div>
           </div>
 
-          {/* Right Column - Single Column */}
+          {/* Middle Column (20%) - Buttons, Variables, Cycles */}
           <div className="flex flex-col h-full gap-4">
-            {/* Architecture Selection */}
-            <Card className="flex items-center">
-              <CardContent className="w-full p-3">
-                <div className="flex items-center gap-2">
-                  <Label className="text-sm whitespace-nowrap">Architecture:</Label>
-                  <Select value={selectedArchitecture} onValueChange={setSelectedArchitecture}>
-                    <SelectTrigger className="h-8 text-xs">
-                      <SelectValue placeholder="Architecture" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ARCHITECTURE_GENERATIONS.map(arch => (
-                        <SelectItem key={arch} value={arch} className="text-xs">
-                          Architecture {arch}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {!isArchitectureCompatible() && (
-                  <p className="text-xs text-destructive mt-2">
-                    Requires Architecture {program?.minimalArchitectureNeededForRun}+
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-
             {/* Buttons */}
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2">
               <Button 
                 variant="outline" 
                 size="sm"
@@ -333,7 +307,7 @@ export default function Execution() {
                     setProgramArgs(program.programXArguments.map(arg => ({ name: arg, value: '' })));
                   }
                 }}
-                className="flex-1"
+                className="w-full"
               >
                 <RotateCcw className="h-3 w-3 mr-1" />
                 Setup New Run
@@ -342,7 +316,7 @@ export default function Execution() {
                 size="sm"
                 onClick={handleStartExecution} 
                 disabled={executing || !isArchitectureCompatible()}
-                className="flex-1 bg-success hover:bg-success/90 text-success-foreground disabled:opacity-50"
+                className="w-full bg-success hover:bg-success/90 text-success-foreground disabled:opacity-50"
               >
                 {executing ? (
                   <>
@@ -357,47 +331,6 @@ export default function Execution() {
                 )}
               </Button>
             </div>
-
-            {/* Arguments Table */}
-            <Card className="flex-1 flex flex-col overflow-hidden">
-              <CardHeader className="pb-3 flex-shrink-0">
-                <CardTitle className="text-sm">Arguments</CardTitle>
-              </CardHeader>
-              <CardContent className="flex-1 overflow-auto p-0">
-                {programArgs && programArgs.length > 0 ? (
-                  <ScrollArea className="h-full">
-                    <div className="px-6 pb-6">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead className="text-xs">Argument Name</TableHead>
-                            <TableHead className="text-xs">Value</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {programArgs.map((arg, index) => (
-                            <TableRow key={index}>
-                              <TableCell className="font-mono text-xs">{arg.name}</TableCell>
-                              <TableCell>
-                                <Input
-                                  type="text"
-                                  value={arg.value}
-                                  onChange={(e) => handleArgChange(index, e.target.value)}
-                                  placeholder="0"
-                                  className="h-7 text-xs"
-                                />
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </ScrollArea>
-                ) : (
-                  <p className="text-center text-muted-foreground text-xs py-4">No arguments required</p>
-                )}
-              </CardContent>
-            </Card>
 
             {/* Variables Table */}
             <Card className="flex-1 flex flex-col overflow-hidden">
@@ -456,13 +389,88 @@ export default function Execution() {
               </CardContent>
             </Card>
 
-            {/* Cycles and Back Button */}
-            <div className="flex items-center justify-between gap-4">
+            {/* Cycles */}
+            <div className="flex items-center justify-center">
               <p className="text-sm text-muted-foreground">Cycles: {program?.currentCycles || 0}</p>
+            </div>
+          </div>
+
+          {/* Right Column (20%) - Architecture, Arguments, Back Button */}
+          <div className="flex flex-col h-full gap-4">
+            {/* Architecture Selection */}
+            <Card className="flex items-center">
+              <CardContent className="w-full p-3">
+                <div className="flex items-center gap-2">
+                  <Label className="text-sm whitespace-nowrap">Architecture:</Label>
+                  <Select value={selectedArchitecture} onValueChange={setSelectedArchitecture}>
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue placeholder="Architecture" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ARCHITECTURE_GENERATIONS.map(arch => (
+                        <SelectItem key={arch} value={arch} className="text-xs">
+                          Architecture {arch}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {!isArchitectureCompatible() && (
+                  <p className="text-xs text-destructive mt-2">
+                    Requires Architecture {program?.minimalArchitectureNeededForRun}+
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Arguments Table */}
+            <Card className="flex-1 flex flex-col overflow-hidden">
+              <CardHeader className="pb-3 flex-shrink-0">
+                <CardTitle className="text-sm">Arguments</CardTitle>
+              </CardHeader>
+              <CardContent className="flex-1 overflow-auto p-0">
+                {programArgs && programArgs.length > 0 ? (
+                  <ScrollArea className="h-full">
+                    <div className="px-6 pb-6">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="text-xs">Argument Name</TableHead>
+                            <TableHead className="text-xs">Value</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {programArgs.map((arg, index) => (
+                            <TableRow key={index}>
+                              <TableCell className="font-mono text-xs">{arg.name}</TableCell>
+                              <TableCell>
+                                <Input
+                                  type="text"
+                                  value={arg.value}
+                                  onChange={(e) => handleArgChange(index, e.target.value)}
+                                  placeholder="0"
+                                  className="h-7 text-xs"
+                                />
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </ScrollArea>
+                ) : (
+                  <p className="text-center text-muted-foreground text-xs py-4">No arguments required</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Back Button */}
+            <div className="flex items-center justify-center">
               <Button 
                 variant="outline" 
                 size="sm"
                 onClick={() => navigate("/dashboard")}
+                className="w-full"
               >
                 Back to Dashboard
               </Button>
