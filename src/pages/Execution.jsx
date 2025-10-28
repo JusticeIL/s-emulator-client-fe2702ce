@@ -220,6 +220,7 @@ export default function Execution() {
       toast({
         title: "Execution Complete",
         description: `Program finished in ${result.currentCycles} cycles`,
+        variant: "success",
       });
       setExecuting(false);
     } catch (error) {

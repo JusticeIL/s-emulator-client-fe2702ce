@@ -191,7 +191,7 @@ All colors MUST be HSL.
   /* Force red background for incompatible instruction rows */
   tr.row-incompatible-architecture,
   tr.row-incompatible-architecture:hover {
-    background-color: #fecaca !important;
+    background-color: #ef4444 !important;
   }
 
   .dark tr.row-incompatible-architecture,

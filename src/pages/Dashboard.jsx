@@ -146,6 +146,7 @@ export default function Dashboard() {
       toast({
         title: "Success",
         description: `Added ${amount} credits successfully`,
+        variant: "success",
       });
       setCreditAmount("");
     } catch (error) {

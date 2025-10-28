@@ -33,6 +33,7 @@ export default function Login() {
         toast({
           title: "Success",
           description: "Login successful!",
+          variant: "success",
         });
         navigate("/dashboard");
       } else if (response.status === 409) {
