@@ -189,8 +189,21 @@ export default function Dashboard() {
   };
 
   const handleShowVariables = (run) => {
-    const variables = run?.finalStateOfAllVariables;
-    setSelectedRunVariables(variables && typeof variables === 'object' ? variables : null);
+    if (!run || !run.finalStateOfAllVariables) {
+      setSelectedRunVariables(null);
+      setShowVariablesPopup(true);
+      return;
+    }
+    
+    const variables = run.finalStateOfAllVariables;
+    
+    // Ensure variables is a valid object with keys
+    if (typeof variables === 'object' && variables !== null && Object.keys(variables).length > 0) {
+      setSelectedRunVariables(variables);
+    } else {
+      setSelectedRunVariables(null);
+    }
+    
     setShowVariablesPopup(true);
   };
 
