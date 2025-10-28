@@ -214,7 +214,7 @@ export default function Execution() {
   return (
     <div className="min-h-screen bg-background p-6">
       {/* Top Bar */}
-      <div className="flex justify-between items-start gap-6 max-w-[1800px] mx-auto mb-12">
+      <div className="flex justify-between items-start gap-6 max-w-[1800px] mx-auto mb-[50px]">
         {/* Left: Username */}
         <div className="flex-1 min-w-0">
           <p className="text-foreground">{username}</p>
@@ -226,13 +226,9 @@ export default function Execution() {
           <p className="text-muted-foreground mt-1">{program?.programName || "Program Name"}</p>
         </div>
         
-        {/* Right: Available Credits and Theme Toggle - aligned to right */}
+        {/* Right: Theme Toggle - aligned to right */}
         <div className="flex items-center gap-5 flex-1">
-          <div className="ml-auto flex items-center gap-5">
-            <div className="text-sm">
-              <span className="text-muted-foreground">Available Credits: </span>
-              <span className="font-semibold text-primary">{currentUserCredits}</span>
-            </div>
+          <div className="ml-auto">
             <ThemeToggle />
           </div>
         </div>
@@ -274,7 +270,7 @@ export default function Execution() {
             </div>
 
             {/* Instructions Table */}
-            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '650px' }}>
+            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '680px', height: '650px' }}>
               <CardContent className="flex-1 flex flex-col min-h-0 p-0">
                 {!program?.programInstructions || program.programInstructions.length === 0 ? (
                   <p className="text-center text-muted-foreground py-8">No instructions available</p>
@@ -369,10 +365,24 @@ export default function Execution() {
                 size="sm"
                 onClick={handleStartExecution} 
                 disabled={executing || !isArchitectureCompatible()}
-                className="flex-1 transition-all hover:bg-transparent hover:text-[#72aa6c] hover:border-[#72aa6c] hover:border-2 disabled:opacity-100"
+                className="flex-1 transition-all disabled:opacity-100"
                 style={{ 
-                  backgroundColor: executing ? '#d97706' : (!isArchitectureCompatible() ? '#4a7a45' : '#72aa6c'),
+                  backgroundColor: executing ? '#d97706' : (!isArchitectureCompatible() ? '#3a5a35' : '#72aa6c'),
                   color: 'white' 
+                }}
+                onMouseEnter={(e) => {
+                  if (!executing && isArchitectureCompatible()) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = '#72aa6c';
+                    e.currentTarget.style.border = '2px solid #72aa6c';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!executing && isArchitectureCompatible()) {
+                    e.currentTarget.style.backgroundColor = '#72aa6c';
+                    e.currentTarget.style.color = 'white';
+                    e.currentTarget.style.border = '';
+                  }
                 }}
               >
                 {executing ? (
@@ -390,7 +400,7 @@ export default function Execution() {
             </div>
 
             {/* Variables Table */}
-            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '650px' }}>
+            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '680px', height: '650px' }}>
               <CardHeader className="pb-3 flex-shrink-0">
                 <CardTitle className="text-sm">Variables</CardTitle>
               </CardHeader>
@@ -454,6 +464,12 @@ export default function Execution() {
 
           {/* Right Column (20%) - Architecture, Arguments, Back Button */}
           <div className="flex flex-col h-full gap-4">
+            {/* Available Credits - aligned to left */}
+            <div className="text-sm">
+              <span className="text-muted-foreground">Available Credits: </span>
+              <span className="font-semibold text-primary">{currentUserCredits}</span>
+            </div>
+            
             {/* Architecture Selection */}
             <Card className="flex items-center">
               <CardContent className="w-full p-3">
@@ -481,7 +497,7 @@ export default function Execution() {
             </Card>
 
             {/* Arguments Table */}
-            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '650px' }}>
+            <Card className="flex-1 flex flex-col overflow-hidden" style={{ maxHeight: '680px', height: '650px' }}>
               <CardHeader className="pb-3 flex-shrink-0">
                 <CardTitle className="text-sm">Arguments</CardTitle>
               </CardHeader>
@@ -542,8 +558,8 @@ export default function Execution() {
 
       {/* Slow Request Warning */}
       {showSlowWarning && (
-        <div className="fixed bottom-4 right-4 bg-orange-500 text-white px-4 py-3 rounded-lg shadow-lg max-w-sm">
-          <p className="text-sm font-medium">Request is taking longer than expected...</p>
+        <div className="fixed bottom-4 right-4 bg-orange-500 text-white px-6 py-4 rounded-md shadow-lg max-w-md border-2 border-orange-600">
+          <p className="text-sm font-semibold">Request is taking longer than expected...</p>
           <p className="text-xs mt-1">Please wait while we process your program execution.</p>
         </div>
       )}
