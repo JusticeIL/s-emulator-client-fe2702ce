@@ -368,8 +368,8 @@ export default function Dashboard() {
                         <TableHead>Programs</TableHead>
                         <TableHead>Functions</TableHead>
                         <TableHead>Credits</TableHead>
-                        <TableHead>Used</TableHead>
-                        <TableHead>Executions</TableHead>
+                        <TableHead>Credits Used</TableHead>
+                        <TableHead>Runs</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -419,10 +419,10 @@ export default function Dashboard() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Program Name</TableHead>
-                        <TableHead>User</TableHead>
+                        <TableHead>Username</TableHead>
                         <TableHead>Instructions</TableHead>
                         <TableHead>Max Level</TableHead>
-                        <TableHead>Times Exec</TableHead>
+                        <TableHead>Times Executed</TableHead>
                         <TableHead>Avg Cost</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -539,7 +539,7 @@ export default function Dashboard() {
                       <TableRow>
                         <TableHead>Function Name</TableHead>
                         <TableHead>Program Origin</TableHead>
-                        <TableHead>User</TableHead>
+                        <TableHead>Username</TableHead>
                         <TableHead>Instructions</TableHead>
                         <TableHead>Max Level</TableHead>
                       </TableRow>
