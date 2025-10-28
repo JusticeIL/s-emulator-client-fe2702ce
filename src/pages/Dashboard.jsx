@@ -272,7 +272,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background p-6">
       <div className="w-full mx-auto">
         {/* Header with Theme Toggle and Credits in Top Right */}
-        <div className="flex justify-between items-start gap-6 max-w-[1800px] mx-auto mb-8">
+        <div className="flex justify-between items-start gap-6 max-w-[1800px] mx-auto mb-5">
           <div className="flex-1 min-w-0">
             <h1 className="text-3xl font-bold">S-Emulator Dashboard</h1>
             <p className="text-muted-foreground mt-1">Welcome, {username}</p>
@@ -313,15 +313,15 @@ export default function Dashboard() {
           style={{ 
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
-            gridTemplateRows: '1fr 1fr',
+            gridTemplateRows: 'minmax(550px, 1fr) minmax(550px, 1fr)',
             gap: '10px',
             maxWidth: '1400px',
             justifyContent: 'center',
-            alignItems: 'start'
+            alignItems: 'stretch'
           }}
         >
           {/* Top Left - Users */}
-          <Card className="flex flex-col border-2 h-[550px]" style={{ maxWidth: '680px', width: '100%' }}>
+          <Card className="flex flex-col border-2 h-full" style={{ maxWidth: '680px', width: '100%' }}>
             <CardHeader>
               <CardTitle>Users</CardTitle>
               <CardDescription>Click a user to view their statistics</CardDescription>
@@ -375,7 +375,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Top Right - Programs */}
-          <Card className="flex flex-col border-2 h-[550px]" style={{ maxWidth: '680px', width: '100%' }}>
+          <Card className="flex flex-col border-2 h-full" style={{ maxWidth: '680px', width: '100%' }}>
             <CardHeader>
               <CardTitle>Programs</CardTitle>
               <CardDescription>Available programs</CardDescription>
@@ -429,7 +429,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Left - User Statistics */}
-          <Card className="flex flex-col border-2 h-[550px]" style={{ maxWidth: '680px', width: '100%' }}>
+          <Card className="flex flex-col border-2 h-full" style={{ maxWidth: '680px', width: '100%' }}>
             <CardHeader>
               <CardTitle>User Statistics</CardTitle>
               <CardDescription>
@@ -494,7 +494,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Right - Functions */}
-          <Card className="flex flex-col border-2 h-[550px]" style={{ maxWidth: '680px', width: '100%' }}>
+          <Card className="flex flex-col border-2 h-full" style={{ maxWidth: '680px', width: '100%' }}>
             <CardHeader>
               <CardTitle>Functions</CardTitle>
               <CardDescription>Available functions</CardDescription>
