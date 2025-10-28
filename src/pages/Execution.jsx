@@ -153,7 +153,8 @@ export default function Execution() {
           description: "Please wait while we process your program execution",
           variant: "default",
           duration: Infinity,
-          className: "bg-orange-500 text-white border-orange-600",
+          className: "text-white border-[#d97706]",
+          style: { backgroundColor: '#d97706' },
         });
       }, 30000);
       

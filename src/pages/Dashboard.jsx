@@ -592,12 +592,20 @@ export default function Dashboard() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {selectedRunVariables && sortVariables(selectedRunVariables).map(([key, value]) => (
-                        <TableRow key={key}>
-                          <TableCell className="font-medium">{key}</TableCell>
-                          <TableCell className="text-muted-foreground">{value}</TableCell>
+                      {selectedRunVariables && Object.keys(selectedRunVariables).length > 0 ? (
+                        sortVariables(selectedRunVariables).map(([key, value]) => (
+                          <TableRow key={key}>
+                            <TableCell className="font-medium">{key}</TableCell>
+                            <TableCell className="text-muted-foreground">{value}</TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={2} className="text-center text-muted-foreground">
+                            No variables available
+                          </TableCell>
                         </TableRow>
-                      ))}
+                      )}
                     </TableBody>
                   </Table>
                 </ScrollArea>
