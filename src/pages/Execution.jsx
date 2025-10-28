@@ -214,27 +214,21 @@ export default function Execution() {
   return (
     <div className="min-h-screen bg-background p-6">
       {/* Top Bar */}
-      <div className="max-w-[1800px] mx-auto mb-[75px]">
-        <div 
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '45% 20% 20%',
-            gap: '7.5%',
-          }}
-        >
+      <div className="max-w-[1800px] mx-auto mb-[50px]">
+        <div className="relative flex items-start justify-between">
           {/* Left: Username */}
-          <div>
+          <div className="flex-shrink-0">
             <p className="text-foreground">{username}</p>
           </div>
           
-          {/* Middle: Title and Program Name */}
-          <div className="text-center col-span-1">
-            <h1 className="text-3xl font-bold">S-emulator Execution</h1>
-            <p className="text-muted-foreground mt-1">{program?.programName || "Program Name"}</p>
+          {/* Center: Title and Program Name (absolutely centered to page) */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 text-center">
+            <h1 className="text-3xl font-bold whitespace-nowrap">S-emulator Execution</h1>
+            <p className="text-muted-foreground mt-1 whitespace-nowrap">{program?.programName || "Program Name"}</p>
           </div>
           
           {/* Right: Available Credits and Theme Toggle */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4 flex-shrink-0">
             <div className="text-sm">
               <span className="text-muted-foreground">Available Credits: </span>
               <span className="font-semibold text-primary">{currentUserCredits}</span>
