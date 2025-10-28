@@ -189,11 +189,13 @@ All colors MUST be HSL.
   }
 
   /* Force red background for incompatible instruction rows */
-  .row-incompatible-architecture {
-    background-color: #fee2e2 !important;
+  tr.row-incompatible-architecture,
+  tr.row-incompatible-architecture:hover {
+    background-color: #fecaca !important;
   }
 
-  .dark .row-incompatible-architecture {
+  .dark tr.row-incompatible-architecture,
+  .dark tr.row-incompatible-architecture:hover {
     background-color: rgba(127, 29, 29, 0.5) !important;
   }
 
