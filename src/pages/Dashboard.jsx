@@ -307,11 +307,11 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* 2x2 Grid for Tables - Always 2 columns */}
-        <div className="grid grid-cols-2 gap-6 max-w-[1600px] mx-auto items-start">
-          {/* Ensures proper 2x2 grid layout with consistent spacing */}
+        {/* 2x2 Grid for Tables using Flexbox */}
+        <div className="flex flex-wrap gap-6 max-w-[1600px] mx-auto justify-center">
+          {/* Each table is ~40% width, wraps into 2x2 layout */}
           {/* Top Left - Users */}
-          <Card className="flex flex-col border-2 h-[550px]">
+          <Card className="flex flex-col border-2 h-[550px] w-[40%] min-w-[500px]">
             <CardHeader>
               <CardTitle>Users</CardTitle>
               <CardDescription>Click a user to view their statistics</CardDescription>
@@ -365,7 +365,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Top Right - Programs */}
-          <Card className="flex flex-col border-2 h-[550px]">
+          <Card className="flex flex-col border-2 h-[550px] w-[40%] min-w-[500px]">
             <CardHeader>
               <CardTitle>Programs</CardTitle>
               <CardDescription>Available programs</CardDescription>
@@ -408,7 +408,7 @@ export default function Dashboard() {
                           <TableCell>{program.programInstructions?.length || 0}</TableCell>
                           <TableCell>{program.absoluteMaxExpandLevel || 0}</TableCell>
                           <TableCell>{program.numberOfRuns || 0}</TableCell>
-                          <TableCell>{program.averageCreditsPerRun.toFixed(2)}</TableCell>
+                          <TableCell>{program.averageCreditsPerRun?.toFixed(2) || '0.00'}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -419,7 +419,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Left - User Statistics */}
-          <Card className="flex flex-col border-2 h-[550px]">
+          <Card className="flex flex-col border-2 h-[550px] w-[40%] min-w-[500px]">
             <CardHeader>
               <CardTitle>User Statistics</CardTitle>
               <CardDescription>
@@ -484,7 +484,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Right - Functions */}
-          <Card className="flex flex-col border-2 h-[550px]">
+          <Card className="flex flex-col border-2 h-[550px] w-[40%] min-w-[500px]">
             <CardHeader>
               <CardTitle>Functions</CardTitle>
               <CardDescription>Available functions</CardDescription>
