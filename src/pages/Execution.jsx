@@ -308,10 +308,11 @@ export default function Execution() {
                               selectedArchitecture && 
                               compareArchitectures(instruction.ArchitectureGeneration, selectedArchitecture) > 0;
                             
-                            const textColorClass = isIncompatibleWithSelected ? 'text-red-500' : '';
+                            const textColorClass = isIncompatibleWithSelected ? 'text-red-700' : '';
+                            const rowColorClass = isIncompatibleWithSelected ? 'bg-red-50/80 ring-1 ring-red-200' : '';
                             
                             return (
-                              <TableRow key={index}>
+                              <TableRow key={index} className={rowColorClass}>
                                 <TableCell className={`font-mono text-xs ${textColorClass}`}>{index + 1}</TableCell>
                                 <TableCell>
                                   <Badge variant="outline" className={`text-xs ${textColorClass}`}>
@@ -530,7 +531,7 @@ export default function Execution() {
                                   value={arg.value}
                                   onChange={(e) => handleArgChange(index, e.target.value)}
                                   placeholder="0"
-                                  className="h-7 text-xs w-12"
+                                  className="h-7 text-xs w-10"
                                   disabled={executing}
                                   min="0"
                                   step="1"

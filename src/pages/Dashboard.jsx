@@ -633,7 +633,7 @@ export default function Dashboard() {
                 <CardTitle>Final State of Variables</CardTitle>
               </CardHeader>
               <CardContent className="flex-1 overflow-hidden">
-                <ScrollArea className="h-full max-h-[60vh]">
+                <div className="max-h-[60vh] overflow-y-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -684,7 +684,7 @@ export default function Dashboard() {
                       })()}
                     </TableBody>
                   </Table>
-                </ScrollArea>
+                </div>
                 <div className="mt-4 flex-shrink-0">
                   <Button onClick={() => setShowVariablesPopup(false)} className="w-full">
                     Close
