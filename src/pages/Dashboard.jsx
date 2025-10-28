@@ -61,8 +61,8 @@ export default function Dashboard() {
 
     loadData();
 
-    // Polling every 5 seconds
-    const interval = setInterval(loadData, 5000);
+    // Polling every 1.5 seconds
+    const interval = setInterval(loadData, 1500);
     return () => clearInterval(interval);
   }, [navigate, toast]);
 
