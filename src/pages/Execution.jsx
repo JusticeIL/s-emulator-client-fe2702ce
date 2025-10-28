@@ -22,6 +22,7 @@ export default function Execution() {
   const [expansionLevel, setExpansionLevel] = useState(0);
   const [username, setUsername] = useState("");
   const [currentUserCredits, setCurrentUserCredits] = useState(0);
+  const [expanding, setExpanding] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -80,6 +81,35 @@ export default function Execution() {
     loadUserCredits();
     loadProgram();
   }, [navigate, toast]);
+
+  const handleExpansionLevelChange = async (level) => {
+    try {
+      setExpanding(true);
+      const response = await fetch(`/api/program/expand?level=${level}`, {
+        credentials: 'include',
+      });
+      
+      if (response.ok) {
+        const updatedProgram = await response.json();
+        setProgram(updatedProgram);
+        setExpansionLevel(level);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to expand program",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to expand program",
+        variant: "destructive",
+      });
+    } finally {
+      setExpanding(false);
+    }
+  };
 
   const handleStartExecution = async () => {
     // Validate architecture compatibility
@@ -161,14 +191,19 @@ export default function Execution() {
       {/* Top Bar */}
       <div className="border-b bg-card">
         <div className="max-w-[1800px] mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            {/* Center: Program Name */}
+          <div className="flex justify-between items-center mb-2">
+            {/* Left: Username */}
+            <div className="text-sm text-muted-foreground">
+              User: <span className="font-semibold">{username}</span>
+            </div>
+            
+            {/* Center: Title */}
             <div className="flex-1 text-center">
-              <h1 className="text-xl font-bold">{program?.programName || "Program Name"}</h1>
+              <h1 className="text-lg font-bold">S-emulator Execution</h1>
             </div>
             
             {/* Right: Available Credits + Theme Toggle */}
-            <div className="flex items-center gap-4 absolute right-6">
+            <div className="flex items-center gap-4">
               <div className="text-right">
                 <span className="text-sm text-muted-foreground">Available Credits: </span>
                 <span className="text-sm font-semibold text-primary">{currentUserCredits}</span>
@@ -176,18 +211,27 @@ export default function Execution() {
               <ThemeToggle />
             </div>
           </div>
+          
+          {/* Program Name */}
+          <div className="text-center">
+            <h2 className="text-base font-medium">{program?.programName || "Program Name"}</h2>
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-[1800px] mx-auto px-6 py-6 h-[calc(100vh-120px)]">
-        <div className="grid grid-cols-2 gap-6 h-full">
+      <div className="max-w-[1800px] mx-auto px-6 py-6 h-[calc(100vh-180px)]">
+        <div className="grid grid-cols-[45%_45%] gap-[10%] h-full">
           {/* Left Column - Instructions Table */}
           <div className="flex flex-col h-full">
             {/* Expansion Level Selection - 5% */}
             <div className="h-[5%] flex items-center justify-center gap-4 mb-2">
               <Label className="text-sm">Expansion Level:</Label>
-              <Select value={expansionLevel.toString()} onValueChange={(val) => setExpansionLevel(parseInt(val))}>
+              <Select 
+                value={expansionLevel.toString()} 
+                onValueChange={(val) => handleExpansionLevelChange(parseInt(val))}
+                disabled={expanding}
+              >
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
@@ -200,6 +244,7 @@ export default function Execution() {
                 </SelectContent>
               </Select>
               <span className="text-sm text-muted-foreground">Max: {program?.absoluteMaxExpandLevel || 0}</span>
+              {expanding && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
             </div>
 
             {/* Instructions Table - 90% */}
@@ -237,7 +282,7 @@ export default function Execution() {
                                   </Badge>
                                 </TableCell>
                                 <TableCell className="text-xs">{instruction.label?.labelName || '-'}</TableCell>
-                                <TableCell className="font-mono text-xs">{instruction.fullExpandedStringRepresentation || instruction.instruction || '-'}</TableCell>
+                                <TableCell className="font-mono text-xs">{instruction.instruction || '-'}</TableCell>
                                 <TableCell className="text-xs">{instruction.cycles || '0'}</TableCell>
                                 <TableCell className="text-xs">{instruction.ArchitectureGeneration || 'IV'}</TableCell>
                               </TableRow>
