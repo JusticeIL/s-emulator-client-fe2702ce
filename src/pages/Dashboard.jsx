@@ -307,11 +307,10 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* 2x2 Grid for Tables using Flexbox */}
-        <div className="flex flex-wrap gap-6 max-w-[1600px] mx-auto justify-center">
-          {/* Each table is ~40% width, wraps into 2x2 layout */}
+        {/* 2x2 Grid for Tables */}
+        <div className="grid grid-cols-2 gap-3 max-w-[1400px] mx-auto p-3">
           {/* Top Left - Users */}
-          <Card className="flex flex-col border-2 h-[550px] w-[40%] min-w-[500px]">
+          <Card className="flex flex-col border-2 h-[550px]">
             <CardHeader>
               <CardTitle>Users</CardTitle>
               <CardDescription>Click a user to view their statistics</CardDescription>
@@ -365,7 +364,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Top Right - Programs */}
-          <Card className="flex flex-col border-2 h-[550px] w-[40%] min-w-[500px]">
+          <Card className="flex flex-col border-2 h-[550px]">
             <CardHeader>
               <CardTitle>Programs</CardTitle>
               <CardDescription>Available programs</CardDescription>
@@ -419,7 +418,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Left - User Statistics */}
-          <Card className="flex flex-col border-2 h-[550px] w-[40%] min-w-[500px]">
+          <Card className="flex flex-col border-2 h-[550px]">
             <CardHeader>
               <CardTitle>User Statistics</CardTitle>
               <CardDescription>
@@ -484,7 +483,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Right - Functions */}
-          <Card className="flex flex-col border-2 h-[550px] w-[40%] min-w-[500px]">
+          <Card className="flex flex-col border-2 h-[550px]">
             <CardHeader>
               <CardTitle>Functions</CardTitle>
               <CardDescription>Available functions</CardDescription>
