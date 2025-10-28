@@ -61,6 +61,8 @@ export default function Dashboard() {
       try {
         const userData = await fetchUser(user);
         setCurrentUserCredits(userData.credits || 0);
+        // Load current user's data initially
+        setSelectedUser(userData);
       } catch (error) {
         console.error('Failed to fetch current user credits:', error);
       }
@@ -180,22 +182,6 @@ export default function Dashboard() {
     setSelectedUser(null);
   };
 
-  // Load current user's history when no user is selected
-  useEffect(() => {
-    const loadCurrentUserHistory = async () => {
-      if (!selectedUser && username) {
-        try {
-          const userData = await fetchUser(username);
-          setSelectedUser(userData);
-        } catch (error) {
-          console.error('Failed to load current user history:', error);
-        }
-      }
-    };
-
-    loadCurrentUserHistory();
-  }, [selectedUser, username]);
-
   const handleShowVariables = (run) => {
     try {
       if (!run || !run.finalStateOfAllVariables) {
@@ -254,13 +240,28 @@ export default function Dashboard() {
         return;
       }
 
+      // Extract and sort x variables from finalStateOfAllVariables
+      const xVariables = {};
+      if (run.finalStateOfAllVariables && typeof run.finalStateOfAllVariables === 'object') {
+        Object.entries(run.finalStateOfAllVariables)
+          .filter(([key]) => key.startsWith('x'))
+          .sort(([keyA], [keyB]) => {
+            const numA = parseInt(keyA.slice(1)) || 0;
+            const numB = parseInt(keyB.slice(1)) || 0;
+            return numA - numB;
+          })
+          .forEach(([key, value]) => {
+            xVariables[key] = value;
+          });
+      }
+
       // Navigate to execution page with rerun data
       navigate('/execution', { 
         state: { 
           rerunData: {
             expansionLevel: run.expansionLevel || 0,
             architecture: run.architectureGeneration || 'IV',
-            arguments: run.xVariables || {}
+            arguments: xVariables
           }
         } 
       });
@@ -396,6 +397,11 @@ export default function Dashboard() {
                     placeholder="Amount"
                     value={creditAmount}
                     onChange={(e) => setCreditAmount(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !addingCredits) {
+                        handleAddCredits();
+                      }
+                    }}
                     min="1"
                     className="h-9"
                   />
@@ -435,7 +441,7 @@ export default function Dashboard() {
                   onClick={handleUnselectUser} 
                   variant="outline" 
                   size="sm"
-                  disabled={!selectedUser || selectedUser.username === username}
+                  disabled={!selectedUser}
                 >
                   Unselect User
                 </Button>
@@ -665,8 +671,8 @@ export default function Dashboard() {
               <CardHeader className="flex-shrink-0">
                 <CardTitle>Final State of Variables</CardTitle>
               </CardHeader>
-              <CardContent className="flex-1 overflow-hidden p-4">
-                <div className="max-h-[60vh] overflow-y-auto border rounded">
+              <CardContent className="flex-1 flex flex-col p-4" style={{ maxHeight: 'calc(80vh - 200px)' }}>
+                <div className="overflow-y-auto border rounded flex-1">
                   <Table>
                     <TableHeader>
                       <TableRow>

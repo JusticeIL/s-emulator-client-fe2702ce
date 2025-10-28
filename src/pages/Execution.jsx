@@ -418,7 +418,7 @@ export default function Execution() {
                 size="sm"
                 onClick={handleStartExecution} 
                 disabled={executing || !isArchitectureCompatible()}
-                className="flex-1 transition-all disabled:opacity-100 text-white hover:text-[#72aa6c]"
+                className="flex-1 transition-all disabled:opacity-100"
                 style={{ 
                   backgroundColor: executing ? '#d97706' : (!isArchitectureCompatible() ? '#3a5a35' : '#72aa6c'),
                   color: 'white',
@@ -427,7 +427,7 @@ export default function Execution() {
                 onMouseEnter={(e) => {
                   if (!executing && isArchitectureCompatible()) {
                     e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = '#72aa6c';
+                    e.currentTarget.style.color = 'white';
                     e.currentTarget.style.border = '2px solid #72aa6c';
                   }
                 }}
@@ -570,7 +570,7 @@ export default function Execution() {
                                   value={arg.value}
                                   onChange={(e) => handleArgChange(index, e.target.value)}
                                   placeholder="0"
-                                  className="h-7 text-xs w-12"
+                                  className="h-7 text-xs w-20"
                                   disabled={executing}
                                   min="0"
                                   step="1"
