@@ -23,6 +23,7 @@ export default function Execution() {
   const [username, setUsername] = useState("");
   const [currentUserCredits, setCurrentUserCredits] = useState(0);
   const [expanding, setExpanding] = useState(false);
+  const [showSlowWarning, setShowSlowWarning] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -127,6 +128,13 @@ export default function Execution() {
 
     try {
       setExecuting(true);
+      setShowSlowWarning(false);
+      
+      // Show warning after 5 seconds
+      const warningTimeout = setTimeout(() => {
+        setShowSlowWarning(true);
+      }, 5000);
+      
       // Build arguments as array of VariableDTO objects
       const argumentsSet = programArgs.map(arg => ({
         name: arg.name,
@@ -134,6 +142,8 @@ export default function Execution() {
       }));
       
       const result = await executeProgram(argumentsSet, selectedArchitecture);
+      clearTimeout(warningTimeout);
+      setShowSlowWarning(false);
       setProgram(result);
       
       // Update credits after successful execution
@@ -151,6 +161,7 @@ export default function Execution() {
       setExecuting(false);
     } catch (error) {
       setExecuting(false);
+      setShowSlowWarning(false);
       toast({
         title: "Error",
         description: error.message || "Failed to execute program",
@@ -188,7 +199,7 @@ export default function Execution() {
   return (
     <div className="min-h-screen bg-background p-6">
       {/* Top Bar */}
-      <div className="flex justify-between items-start gap-6 max-w-[1800px] mx-auto mb-2.5">
+      <div className="flex justify-between items-start gap-6 max-w-[1800px] mx-auto mb-8">
         {/* Left: Username */}
         <div className="flex-1 min-w-0">
           <p className="text-foreground">{username}</p>
@@ -200,13 +211,9 @@ export default function Execution() {
           <p className="text-muted-foreground mt-1">{program?.programName || "Program Name"}</p>
         </div>
         
-        {/* Right: Available Credits + Theme Toggle - aligned to right */}
+        {/* Right: Theme Toggle - aligned to right */}
         <div className="flex items-center gap-5 flex-1">
-          <div className="ml-auto flex items-center gap-5">
-            <div className="text-sm">
-              <span className="text-muted-foreground">Available Credits: </span>
-              <span className="font-semibold text-primary">{currentUserCredits}</span>
-            </div>
+          <div className="ml-auto">
             <ThemeToggle />
           </div>
         </div>
@@ -276,7 +283,7 @@ export default function Execution() {
                             return (
                               <TableRow
                                 key={index}
-                                className={!compatible ? 'opacity-50' : ''}
+                                className={isIncompatibleWithSelected ? 'text-red-500' : ''}
                               >
                                 <TableCell className="font-mono text-xs">{index + 1}</TableCell>
                                 <TableCell>
@@ -285,7 +292,7 @@ export default function Execution() {
                                   </Badge>
                                 </TableCell>
                                 <TableCell className="text-xs">{instruction.label.name}</TableCell>
-                                <TableCell className={`font-mono text-xs ${isIncompatibleWithSelected ? 'text-red-500' : ''}`}>
+                                <TableCell className="font-mono text-xs">
                                   {instruction.instruction}
                                 </TableCell>
                                 <TableCell className="text-xs">{instruction.cycles || '0'}</TableCell>
@@ -338,13 +345,16 @@ export default function Execution() {
                 size="sm"
                 onClick={handleStartExecution} 
                 disabled={executing || !isArchitectureCompatible()}
-                className="flex-1 disabled:opacity-50 transition-all hover:bg-transparent hover:text-[#72aa6c] hover:border-[#72aa6c] hover:border-2"
-                style={{ backgroundColor: executing || !isArchitectureCompatible() ? undefined : '#72aa6c', color: executing || !isArchitectureCompatible() ? undefined : 'white' }}
+                className="flex-1 transition-all hover:bg-transparent hover:text-[#72aa6c] hover:border-[#72aa6c] hover:border-2 disabled:opacity-100"
+                style={{ 
+                  backgroundColor: executing || !isArchitectureCompatible() ? '#4a7a45' : '#72aa6c', 
+                  color: 'white' 
+                }}
               >
                 {executing ? (
                   <>
-                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                    Running...
+                    <Loader2 className="mr-1 h-3 w-3 animate-spin text-yellow-500" />
+                    <span className="text-yellow-500">Running...</span>
                   </>
                 ) : (
                   <>
@@ -420,6 +430,12 @@ export default function Execution() {
 
           {/* Right Column (20%) - Architecture, Arguments, Back Button */}
           <div className="flex flex-col h-full gap-4">
+            {/* Available Credits */}
+            <div className="text-sm">
+              <span className="text-muted-foreground">Available Credits: </span>
+              <span className="font-semibold text-primary">{currentUserCredits}</span>
+            </div>
+
             {/* Architecture Selection */}
             <Card className="flex items-center">
               <CardContent className="w-full p-3">
@@ -473,6 +489,7 @@ export default function Execution() {
                                   onChange={(e) => handleArgChange(index, e.target.value)}
                                   placeholder="0"
                                   className="h-7 text-xs"
+                                  disabled={executing}
                                 />
                               </TableCell>
                             </TableRow>
@@ -502,6 +519,14 @@ export default function Execution() {
           </div>
         </div>
       </div>
+
+      {/* Slow Request Warning */}
+      {showSlowWarning && (
+        <div className="fixed bottom-4 right-4 bg-orange-500 text-white px-4 py-3 rounded-lg shadow-lg max-w-sm">
+          <p className="text-sm font-medium">Request is taking longer than expected...</p>
+          <p className="text-xs mt-1">Please wait while we process your program execution.</p>
+        </div>
+      )}
     </div>
   );
 }
