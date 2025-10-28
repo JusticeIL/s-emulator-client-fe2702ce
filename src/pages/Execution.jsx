@@ -214,7 +214,7 @@ export default function Execution() {
   return (
     <div className="min-h-screen bg-background p-6">
       {/* Top Bar */}
-      <div className="max-w-[1800px] mx-auto mb-[50px]">
+      <div className="max-w-[1800px] mx-auto mb-[75px]">
         <div className="relative flex items-start justify-between">
           {/* Left: Username */}
           <div className="flex-shrink-0">
@@ -522,7 +522,7 @@ export default function Execution() {
                                   value={arg.value}
                                   onChange={(e) => handleArgChange(index, e.target.value)}
                                   placeholder="0"
-                                  className="h-7 text-xs"
+                                  className="h-7 text-xs w-[50%]"
                                   disabled={executing}
                                   min="0"
                                   step="1"
@@ -558,7 +558,7 @@ export default function Execution() {
 
       {/* Slow Request Warning */}
       {showSlowWarning && (
-        <div className="fixed bottom-4 right-4 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg max-w-md border-2 border-red-600">
+        <div className="fixed bottom-4 right-4 bg-orange-500 text-white px-6 py-4 rounded-lg shadow-lg max-w-md border-2 border-orange-600">
           <p className="text-sm font-semibold">Request is taking longer than expected...</p>
           <p className="text-xs mt-1">Please wait while we process your program execution</p>
         </div>
