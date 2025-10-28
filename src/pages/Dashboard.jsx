@@ -34,6 +34,19 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Prevent body scroll when popup is open
+  useEffect(() => {
+    if (showVariablesPopup) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showVariablesPopup]);
+
   useEffect(() => {
     const user = getUsernameCookie();
     if (!user) {
@@ -295,9 +308,10 @@ export default function Dashboard() {
         </div>
 
         {/* 2x2 Grid for Tables - Always 2 columns */}
-        <div className="grid grid-cols-2 gap-4 max-w-7xl mx-auto items-start justify-center">
+        <div className="grid grid-cols-2 gap-6 max-w-[1600px] mx-auto items-start">
+          {/* Ensures proper 2x2 grid layout with consistent spacing */}
           {/* Top Left - Users */}
-          <Card className="flex flex-col border-2 h-[500px]">
+          <Card className="flex flex-col border-2 h-[550px]">
             <CardHeader>
               <CardTitle>Users</CardTitle>
               <CardDescription>Click a user to view their statistics</CardDescription>
@@ -351,7 +365,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Top Right - Programs */}
-          <Card className="flex flex-col border-2 h-[500px]">
+          <Card className="flex flex-col border-2 h-[550px]">
             <CardHeader>
               <CardTitle>Programs</CardTitle>
               <CardDescription>Available programs</CardDescription>
@@ -405,7 +419,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Left - User Statistics */}
-          <Card className="flex flex-col border-2 h-[500px]">
+          <Card className="flex flex-col border-2 h-[550px]">
             <CardHeader>
               <CardTitle>User Statistics</CardTitle>
               <CardDescription>
@@ -470,7 +484,7 @@ export default function Dashboard() {
           </Card>
 
           {/* Bottom Right - Functions */}
-          <Card className="flex flex-col border-2 h-[500px]">
+          <Card className="flex flex-col border-2 h-[550px]">
             <CardHeader>
               <CardTitle>Functions</CardTitle>
               <CardDescription>Available functions</CardDescription>
